@@ -139,20 +139,20 @@ void classification( TString myMethodList = "" )
    // Define the input variables that shall be used for the MVA training
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
    // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
-   factory->AddVariable( "2e.electron_minimal_energy", "Electron minimal energy", "MeV" 'F' );
-   factory->AddVariable( "2e.electron_maximal_energy", "Electron maximal energy", "MeV" 'F' );
+   factory->AddVariable( "2e.electron_minimal_energy", "MeV", 'F' );
+   factory->AddVariable( "2e.electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
    factory->AddVariable( "energy_sum := 2e.electron_minimal_energy+2e.electron_maximal_energy ", "Electrons energy sum", "MeV", 'F' );
    factory->AddVariable( "energy_difference := 2e.electron_maximal_energy-2e.electron_minimal_energy ", "Electrons energy difference", "MeV", 'F' );
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
    // input variables, the response values of all trained MVAs, and the spectator variables
-   factory->AddSpectator( "spec1",  "Spectator 1", "", 'F' );
+   // factory->AddSpectator( "spec1",  "Spectator 1", "", 'F' );
 
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
-   TString fname_signal = "./tree_signal.root";
-   TString fname_background = "./tree_bakground.root";
+   TString fname_signal = "./root_export_0nu_25G.root";
+   TString fname_background = "./root_export_2nu_25G.root";
 
    TFile *input_signal = TFile::Open( fname_signal );
    TFile *input_background = TFile::Open( fname_background );
@@ -161,8 +161,11 @@ void classification( TString myMethodList = "" )
 
    // --- Register the training and test trees
 
-   TTree *signal     = (TTree*)input_signal->Get("snemodata");
-   TTree *background = (TTree*)input_background->Get("snemodata");
+   TTree *signal = (TTree*)input_signal->Get("snemodata;1");
+   TTree *background = (TTree*)input_background->Get("snemodata;1");
+
+   std::cout << " 0000000000000" << background->GetEntries() << std::endl;
+   // signal->Draw("2e.electron_minimal_energy");
 
    // global event weights per tree (see below for setting event-wise weights)
    Double_t signalWeight     = 1.0;
@@ -172,7 +175,7 @@ void classification( TString myMethodList = "" )
    factory->AddSignalTree    ( signal,     signalWeight     );
    factory->AddBackgroundTree( background, backgroundWeight );
 
-   factory->SetBackgroundWeightExpression( "weight" );
+   // factory->SetBackgroundWeightExpression( "weight" );
 
    // Apply additional cuts on the signal and background samples (can be different)
    TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
