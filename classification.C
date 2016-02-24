@@ -139,10 +139,10 @@ void classification( TString myMethodList = "" )
    // Define the input variables that shall be used for the MVA training
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
    // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
-   factory->AddVariable( "2e.electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
-   factory->AddVariable( "2e.electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
-   factory->AddVariable( "energy_sum := 2e.electron_minimal_energy+2e.electron_maximal_energy ", "Electrons energy sum", "MeV", 'F' );
-   factory->AddVariable( "energy_difference := 2e.electron_maximal_energy-2e.electron_minimal_energy ", "Electrons energy difference", "MeV", 'F' );
+   factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
+   factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
+   factory->AddVariable( "energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'F' );
+   factory->AddVariable( "energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'F' );
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
