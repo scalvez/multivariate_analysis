@@ -128,13 +128,15 @@ void classification_application( TString myMethodList = "" )
    // Create a set of variables and declare them to the reader
    // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
 
-   Float_t 2e.electron_minimal_energy, 2e.electron_maximal_energy;
-   Float_t electron_minimal_energy, 2e.electron_maximal_energy;
+   Float_t electron_minimal_energy;
+   Float_t electron_maximal_energy;
+   Float_t electrons_energy_sum;
+   Float_t electrons_energy_difference;
 
-   reader->AddVariable( "2e.electron_minimal_energy", &2e.electron_minimal_energy );
-   reader->AddVariable( "2e.electron_maximal_energy", &2e.electron_maximal_energy );
-   reader->AddVariable( "energy_sum := 2e.electron_minimal_energy+2e.electron_maximal_energy", &energy_sum );
-   reader->AddVariable( "energy_difference := 2e.electron_maximal_energy-2e.electron_minimal_energy", &energy_difference );
+   reader->AddVariable( "2e_electron_minimal_energy", &electron_minimal_energy );
+   reader->AddVariable( "2e_electron_maximal_energy", &electron_maximal_energy );
+   reader->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy", &electrons_energy_sum );
+   reader->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy", &electrons_energy_difference );
 
    // // Spectator variables declared in the training have to be added to the reader, too
    // Float_t spec1;
@@ -212,7 +214,7 @@ void classification_application( TString myMethodList = "" )
    // we'll later on use only the "signal" events for the test in this example.
    //
    TFile *input(0);
-   TString fname = "./tmva_classification.root";
+   TString fname = "./data.root";
 
    input = TFile::Open( fname ); // check if file in local directory exists
 
@@ -220,7 +222,7 @@ void classification_application( TString myMethodList = "" )
      std::cout << "ERROR: could not open data file" << std::endl;
      exit(1);
    }
-   std::cout << "--- TMVAClassificationApp    : Using input file: " << input->GetName() << std::endl;
+   std::cout << "--- Classification Application   : Using input file: " << input->GetName() << std::endl;
 
    // --- Event loop
 
@@ -230,9 +232,12 @@ void classification_application( TString myMethodList = "" )
    //   but of course you can use different ones and copy the values inside the event loop
    //
    std::cout << "--- Select signal sample" << std::endl;
-   TTree* theTree = (TTree*)input->Get("TreeS");
-   Float_t userVar1, userVar2;
-   theTree->SetBranchAddress( "var1", &userVar1 );
+   TTree* theTree = (TTree*)input->Get("snemodata");
+
+   theTree->SetBranchAddress( "2e_electron_minimal_energy", &electron_minimal_energy);
+   theTree->SetBranchAddress( "2e_electron_maximal_energy", &electron_maximal_energy);
+   theTree->SetBranchAddress( "2e_electrons_energy_difference", &electrons_energy_difference);
+   theTree->SetBranchAddress( "2e_electrons_energy_sum", &electrons_energy_sum);
 
    // Efficiency calculator for cut method
    Int_t    nSelCutsGA = 0;
@@ -249,8 +254,8 @@ void classification_application( TString myMethodList = "" )
 
       theTree->GetEntry(ievt);
 
-      var1 = userVar1 + userVar2;
-      var2 = userVar1 - userVar2;
+      // var1 = userVar1 + userVar2;
+      // var2 = userVar1 - userVar2;
 
       // --- Return the MVA outputs and fill into histograms
 
@@ -341,7 +346,7 @@ void classification_application( TString myMethodList = "" )
 
    // --- Write histograms
 
-   TFile *target  = new TFile( "TMVApp.root","RECREATE" );
+   TFile *target  = new TFile( "TMVA_application.root","RECREATE" );
    if (Use["Likelihood"   ])   histLk     ->Write();
    if (Use["LikelihoodD"  ])   histLkD    ->Write();
    if (Use["LikelihoodPCA"])   histLkPCA  ->Write();
@@ -380,9 +385,9 @@ void classification_application( TString myMethodList = "" )
    if (Use["Fisher"]) { if (probHistFi != 0) probHistFi->Write(); if (rarityHistFi != 0) rarityHistFi->Write(); }
    target->Close();
 
-   std::cout << "--- Created root file: \"TMVApp.root\" containing the MVA output histograms" << std::endl;
+   std::cout << "--- Created root file: \"TMVA_application.root\" containing the MVA output histograms" << std::endl;
 
    delete reader;
 
-   std::cout << "==> TMVAClassificationApplication is done!" << endl << std::endl;
+   std::cout << "==> ClassificationApplication is done!" << endl << std::endl;
 }

@@ -46,12 +46,12 @@ void classification( TString myMethodList = "" )
    Use["LikelihoodMIX"]   = 0;
    //
    // --- Mutidimensional likelihood and Nearest-Neighbour methods
-   Use["PDERS"]           = 1;
+   Use["PDERS"]           = 0;
    Use["PDERSD"]          = 0;
    Use["PDERSPCA"]        = 0;
-   Use["PDEFoam"]         = 1;
+   Use["PDEFoam"]         = 0;
    Use["PDEFoamBoost"]    = 0; // uses generalised MVA method boosting
-   Use["KNN"]             = 1; // k-nearest neighbour method
+   Use["KNN"]             = 0; // k-nearest neighbour method
    //
    // --- Linear Discriminant Analysis
    Use["LD"]              = 1; // Linear Discriminant identical to Fisher
@@ -61,7 +61,7 @@ void classification( TString myMethodList = "" )
    Use["HMatrix"]         = 0;
    //
    // --- Function Discriminant analysis
-   Use["FDA_GA"]          = 1; // minimisation of user-defined function using Genetics Algorithm
+   Use["FDA_GA"]          = 0; // minimisation of user-defined function using Genetics Algorithm
    Use["FDA_SA"]          = 0;
    Use["FDA_MC"]          = 0;
    Use["FDA_MT"]          = 0;
@@ -71,12 +71,12 @@ void classification( TString myMethodList = "" )
    // --- Neural Networks (all are feed-forward Multilayer Perceptrons)
    Use["MLP"]             = 0; // Recommended ANN
    Use["MLPBFGS"]         = 0; // Recommended ANN with optional training method
-   Use["MLPBNN"]          = 1; // Recommended ANN with BFGS training method and bayesian regulator
+   Use["MLPBNN"]          = 0; // Recommended ANN with BFGS training method and bayesian regulator
    Use["CFMlpANN"]        = 0; // Depreciated ANN from ALEPH
    Use["TMlpANN"]         = 0; // ROOT's own ANN
    //
    // --- Support Vector Machine
-   Use["SVM"]             = 1;
+   Use["SVM"]             = 0;
    //
    // --- Boosted Decision Trees
    Use["BDT"]             = 1; // uses Adaptive Boost
@@ -139,10 +139,10 @@ void classification( TString myMethodList = "" )
    // Define the input variables that shall be used for the MVA training
    // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
    // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
-   factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
-   factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
-   factory->AddVariable( "energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'F' );
-   factory->AddVariable( "energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'F' );
+   factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'D' );
+   factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'D' );
+   factory->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'D' );
+   factory->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'D' );
 
    // You can add so-called "Spectator variables", which are not used in the MVA training,
    // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -163,9 +163,6 @@ void classification( TString myMethodList = "" )
 
    TTree *signal = (TTree*)input_signal->Get("snemodata;1");
    TTree *background = (TTree*)input_background->Get("snemodata;1");
-
-   std::cout << " 0000000000000" << background->GetEntries() << std::endl;
-   // signal->Draw("2e.electron_minimal_energy");
 
    // global event weights per tree (see below for setting event-wise weights)
    Double_t signalWeight     = 1.0;
