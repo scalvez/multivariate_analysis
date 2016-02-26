@@ -118,36 +118,13 @@ void classification( TString myMethodList = "" )
    TString outfileName( "TMVA.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
-   // Create the factory object. Later you can choose the methods
-   // whose performance you'd like to investigate. The factory is
-   // the only TMVA object you have to interact with
-   //
-   // The first argument is the base of the name of all the
-   // weightfiles in the directory weight/
-   //
-   // The second argument is the output file for the training results
-   // All TMVA output can be suppressed by removing the "!" (not) in
-   // front of the "Silent" argument in the option string
    TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
                                                "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
 
-   // If you wish to modify default settings
-   // (please check "src/Config.h" to see all available global options)
-   //    (TMVA::gConfig().GetVariablePlotting()).fTimesRMS = 8.0;
-   //    (TMVA::gConfig().GetIONames()).fWeightFileDir = "myWeightDirectory";
-
-   // Define the input variables that shall be used for the MVA training
-   // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
-   // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
    factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'D' );
    factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'D' );
    factory->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'D' );
    factory->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'D' );
-
-   // You can add so-called "Spectator variables", which are not used in the MVA training,
-   // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
-   // input variables, the response values of all trained MVAs, and the spectator variables
-   // factory->AddSpectator( "spec1",  "Spectator 1", "", 'F' );
 
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
@@ -172,29 +149,10 @@ void classification( TString myMethodList = "" )
    factory->AddSignalTree    ( signal,     signalWeight     );
    factory->AddBackgroundTree( background, backgroundWeight );
 
-   // factory->SetBackgroundWeightExpression( "weight" );
+   factory->SetBackgroundWeightExpression( "weight" );
 
-   // Apply additional cuts on the signal and background samples (can be different)
-   TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
-   TCut mycutb = ""; // for example: TCut mycutb = "abs(var1)<0.5";
-
-   // Tell the factory how to use the training and testing events
-   //
-   // If no numbers of events are given, half of the events in the tree are used
-   // for training, and the other half for testing:
-   //    factory->PrepareTrainingAndTestTree( mycut, "SplitMode=random:!V" );
-   // To also specify the number of testing events, use:
-   //    factory->PrepareTrainingAndTestTree( mycut,
-   //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
                                         "nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=NumEvents:!V" );
-
-   // ---- Book MVA methods
-   //
-   // Please lookup the various method configuration options in the corresponding cxx files, eg:
-   // src/MethoCuts.cxx, etc, or here: http://tmva.sourceforge.net/optionRef.html
-   // it is possible to preset ranges in the option string in which the cut optimisation should be done:
-   // "...:CutRangeMin[2]=-1:CutRangeMax[2]=1"...", where [2] is the third input variable
 
    // Cut optimisation
    if (Use["Cuts"])

@@ -138,10 +138,6 @@ void classification_application( TString myMethodList = "" )
    reader->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy", &electrons_energy_sum );
    reader->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy", &electrons_energy_difference );
 
-   // // Spectator variables declared in the training have to be added to the reader, too
-   // Float_t spec1;
-   // reader->AddSpectator( "spec1 := var1",   &spec1 );
-
    // --- Book the MVA methods
 
    TString dir    = "weights/";
@@ -225,12 +221,6 @@ void classification_application( TString myMethodList = "" )
    std::cout << "--- Classification Application   : Using input file: " << input->GetName() << std::endl;
 
    // --- Event loop
-
-   // Prepare the event tree
-   // - here the variable names have to corresponds to your tree
-   // - you can use the same variables as above which is slightly faster,
-   //   but of course you can use different ones and copy the values inside the event loop
-   //
    std::cout << "--- Select signal sample" << std::endl;
    TTree* theTree = (TTree*)input->Get("snemodata");
 
@@ -253,11 +243,6 @@ void classification_application( TString myMethodList = "" )
       if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 
       theTree->GetEntry(ievt);
-
-      // var1 = userVar1 + userVar2;
-      // var2 = userVar1 - userVar2;
-
-      // --- Return the MVA outputs and fill into histograms
 
       if (Use["CutsGA"]) {
          // Cuts is a special case: give the desired signal efficienciy
