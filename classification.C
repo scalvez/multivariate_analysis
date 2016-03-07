@@ -121,10 +121,17 @@ void classification( TString myMethodList = "" )
    TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
                                                "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
 
-   factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'D' );
-   factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'D' );
-   factory->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'D' );
-   factory->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'D' );
+   factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
+   factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
+   factory->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'F' );
+   factory->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'F' );
+   factory->AddVariable( "2e_electrons_internal_probability", "Electrons internal probability", "", 'F' );
+   factory->AddVariable( "2e_electrons_external_probability", "Electrons external probability", "", 'F' );
+   factory->AddVariable( "2e_electrons_vertices_probability", "Electrons vertices probability", "", 'F' );
+   factory->AddVariable( "2e_electrons_angle", "Electrons angle", "radians", 'F' );
+   factory->AddVariable( "2e_electrons_cos_angle", "Electrons cos(angle)", "", 'F' );
+   factory->AddVariable( "2e_electron_Emin_track_length", "Electron of minimal energy track length", "mm", 'F' );
+   factory->AddVariable( "2e_electron_Emax_track_length", "Electron of maximal energy track length", "mm", 'F' );
 
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
@@ -149,7 +156,10 @@ void classification( TString myMethodList = "" )
    factory->AddSignalTree    ( signal,     signalWeight     );
    factory->AddBackgroundTree( background, backgroundWeight );
 
-   factory->SetBackgroundWeightExpression( "weight" );
+   // factory->SetBackgroundWeightExpression( "weight" );
+
+   TCut mycuts = ""; // for example: TCut mycuts = "abs(var1)<0.5 && abs(var2-0.5)<1";
+   TCut mycutb = ""; // for example: TCut mycutb = "abs(var1)<0.5";
 
    factory->PrepareTrainingAndTestTree( mycuts, mycutb,
                                         "nTrain_Signal=0:nTrain_Background=0:SplitMode=Random:NormMode=NumEvents:!V" );
@@ -305,7 +315,7 @@ void classification( TString myMethodList = "" )
 
    if (Use["BDT"])  // Adaptive Boost
       factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                           "!H:!V:NTrees=850:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+                           "!H:!V:NTrees=1000:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
 
    if (Use["BDTB"]) // Bagging
       factory->BookMethod( TMVA::Types::kBDT, "BDTB",
