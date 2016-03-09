@@ -56,7 +56,7 @@ void classification_application( TString myMethodList = "" )
   Use["KNN"]             = 0; // k-nearest neighbour method
   //
   // --- Linear Discriminant Analysis
-  Use["LD"]              = 1; // Linear Discriminant identical to Fisher
+  Use["LD"]              = 0; // Linear Discriminant identical to Fisher
   Use["Fisher"]          = 0;
   Use["FisherG"]         = 0;
   Use["BoostedFisher"]   = 0; // uses generalised MVA method boosting
@@ -71,7 +71,7 @@ void classification_application( TString myMethodList = "" )
   Use["FDA_MCMT"]        = 0;
   //
   // --- Neural Networks (all are feed-forward Multilayer Perceptrons)
-  Use["MLP"]             = 0; // Recommended ANN
+  Use["MLP"]             = 1; // Recommended ANN
   Use["MLPBFGS"]         = 0; // Recommended ANN with optional training method
   Use["MLPBNN"]          = 0; // Recommended ANN with BFGS training method and bayesian regulator
   Use["CFMlpANN"]        = 0; // Depreciated ANN from ALEPH
@@ -87,7 +87,7 @@ void classification_application( TString myMethodList = "" )
   Use["BDTD"]            = 0; // decorrelation + Adaptive Boost
   //
   // --- Friedman's RuleFit method, ie, an optimised series of cuts ("rules")
-  Use["RuleFit"]         = 1;
+  Use["RuleFit"]         = 0;
   // ---------------------------------------------------------------
   Use["Plugin"]          = 0;
   Use["Category"]        = 0;
@@ -135,7 +135,6 @@ void classification_application( TString myMethodList = "" )
   Float_t electrons_internal_probability = 0;
   Float_t electrons_external_probability = 0;
   Float_t electrons_vertices_probability = 0;
-  Float_t electrons_angle = 0;
   Float_t electrons_cos_angle = 0;
   Float_t electron_Emin_track_length = 0;
   Float_t electron_Emax_track_length = 0;
@@ -152,7 +151,6 @@ void classification_application( TString myMethodList = "" )
   reader->AddVariable( "2e_electrons_internal_probability", &electrons_internal_probability );
   reader->AddVariable( "2e_electrons_external_probability", &electrons_external_probability );
   reader->AddVariable( "2e_electrons_vertices_probability", &electrons_vertices_probability );
-  reader->AddVariable( "2e_electrons_angle", &electrons_angle );
   reader->AddVariable( "2e_electrons_cos_angle", &electrons_cos_angle );
   reader->AddVariable( "2e_electron_Emin_track_length", &electron_Emin_track_length );
   reader->AddVariable( "2e_electron_Emax_track_length", &electron_Emax_track_length );
@@ -234,7 +232,7 @@ void classification_application( TString myMethodList = "" )
   // we'll later on use only the "signal" events for the test in this example.
   //
   TFile *input(0);
-  TString fname = "./data.root";
+  TString fname = "./chain.root";
 
   input = TFile::Open( fname ); // check if file in local directory exists
 
@@ -260,7 +258,6 @@ void classification_application( TString myMethodList = "" )
   Double_t br_2e_electrons_internal_probability = 1;
   Double_t br_2e_electrons_external_probability = 1;
   Double_t br_2e_electrons_vertices_probability = 1;
-  Double_t br_2e_electrons_angle = 1;
   Double_t br_2e_electrons_cos_angle = 1;
   Double_t br_2e_electron_Emin_track_length = 1;
   Double_t br_2e_electron_Emax_track_length = 1;
@@ -277,7 +274,6 @@ void classification_application( TString myMethodList = "" )
   theTree->SetBranchAddress( "2e_electrons_internal_probability", &br_2e_electrons_internal_probability);
   theTree->SetBranchAddress( "2e_electrons_external_probability", &br_2e_electrons_external_probability);
   theTree->SetBranchAddress( "2e_electrons_vertices_probability", &br_2e_electrons_vertices_probability);
-  theTree->SetBranchAddress( "2e_electrons_angle", &br_2e_electrons_angle);
   theTree->SetBranchAddress( "2e_electrons_cos_angle", &br_2e_electrons_cos_angle);
   theTree->SetBranchAddress( "2e_electron_Emin_track_length", &br_2e_electron_Emin_track_length);
   theTree->SetBranchAddress( "2e_electron_Emax_track_length", &br_2e_electron_Emax_track_length);
@@ -291,7 +287,7 @@ void classification_application( TString myMethodList = "" )
   std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
   TStopwatch sw;
   sw.Start();
-  for (Long64_t ievt=0; ievt<5000;ievt++) {
+  for (Long64_t ievt=0; ievt<170000;ievt++) {
   // for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
     if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
@@ -312,7 +308,6 @@ void classification_application( TString myMethodList = "" )
     electrons_internal_probability = (Float_t) br_2e_electrons_internal_probability;
     electrons_external_probability = (Float_t) br_2e_electrons_external_probability;
     electrons_vertices_probability = (Float_t) br_2e_electrons_vertices_probability;
-    electrons_angle = (Float_t) br_2e_electrons_angle;
     electrons_cos_angle = (Float_t) br_2e_electrons_cos_angle;
     electron_Emin_track_length = (Float_t) br_2e_electron_Emin_track_length;
     electron_Emax_track_length = (Float_t) br_2e_electron_Emax_track_length;

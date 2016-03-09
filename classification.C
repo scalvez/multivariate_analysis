@@ -86,7 +86,7 @@ void classification( TString myMethodList = "" )
    Use["BDTF"]            = 0; // allow usage of fisher discriminant for node splitting
    //
    // --- Friedman's RuleFit method, ie, an optimised series of cuts ("rules")
-   Use["RuleFit"]         = 1;
+   Use["RuleFit"]         = 0;
    // ---------------------------------------------------------------
 
    std::cout << std::endl;
@@ -128,7 +128,6 @@ void classification( TString myMethodList = "" )
    factory->AddVariable( "2e_electrons_internal_probability", "Electrons internal probability", "", 'F' );
    factory->AddVariable( "2e_electrons_external_probability", "Electrons external probability", "", 'F' );
    factory->AddVariable( "2e_electrons_vertices_probability", "Electrons vertices probability", "", 'F' );
-   factory->AddVariable( "2e_electrons_angle", "Electrons angle", "radians", 'F' );
    factory->AddVariable( "2e_electrons_cos_angle", "Electrons cos(angle)", "", 'F' );
    factory->AddVariable( "2e_electron_Emin_track_length", "Electron of minimal energy track length", "mm", 'F' );
    factory->AddVariable( "2e_electron_Emax_track_length", "Electron of maximal energy track length", "mm", 'F' );
@@ -136,17 +135,26 @@ void classification( TString myMethodList = "" )
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    TString fname_signal = "./root_export_0nu_25G.root";
-   TString fname_background = "./root_export_2nu_25G.root";
+   TString fname_background_2nu = "./root_export_2nu_25G.root";
+   TString fname_background_tl208 = "./root_export_tl208_25G.root";
+   TString fname_background_bi214 = "./root_export_bi214_25G.root";
+   TString fname_background_radon = "./root_export_bi214_wire_25G.root";
 
    TFile *input_signal = TFile::Open( fname_signal );
-   TFile *input_background = TFile::Open( fname_background );
+   TFile *input_background_2nu = TFile::Open( fname_background_2nu );
+   TFile *input_background_tl208 = TFile::Open( fname_background_tl208 );
+   TFile *input_background_bi214 = TFile::Open( fname_background_bi214 );
+   TFile *input_background_radon = TFile::Open( fname_background_radon );
 
-   std::cout << "--- Classification       : Using input file(s): " << input_signal->GetName() << std::endl << input_background->GetName() << std::endl;
+   std::cout << "--- Classification       : Using input file(s): " << input_signal->GetName() << std::endl << input_background_2nu->GetName() << "and others..." << std::endl;
 
    // --- Register the training and test trees
 
    TTree *signal = (TTree*)input_signal->Get("snemodata;1");
-   TTree *background = (TTree*)input_background->Get("snemodata;1");
+   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;1");
+   TTree *background_tl208 = (TTree*)input_background_tl208->Get("snemodata;1");
+   TTree *background_bi214 = (TTree*)input_background_bi214->Get("snemodata;1");
+   TTree *background_radon = (TTree*)input_background_radon->Get("snemodata;1");
 
    // global event weights per tree (see below for setting event-wise weights)
    Double_t signalWeight     = 1.0;
@@ -154,7 +162,10 @@ void classification( TString myMethodList = "" )
 
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
-   factory->AddBackgroundTree( background, backgroundWeight );
+   // factory->AddBackgroundTree( background_2nu, backgroundWeight );
+   factory->AddBackgroundTree( background_tl208, backgroundWeight );
+   // factory->AddBackgroundTree( background_bi214, backgroundWeight );
+   // factory->AddBackgroundTree( background_radon, backgroundWeight );
 
    // factory->SetBackgroundWeightExpression( "weight" );
 
@@ -315,7 +326,7 @@ void classification( TString myMethodList = "" )
 
    if (Use["BDT"])  // Adaptive Boost
       factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                           "!H:!V:NTrees=1000:MinNodeSize=2.5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+                           "!H:!V:NTrees=800:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=100" );
 
    if (Use["BDTB"]) // Bagging
       factory->BookMethod( TMVA::Types::kBDT, "BDTB",
