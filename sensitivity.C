@@ -52,14 +52,6 @@ void sensitivity()
   TH1F *h_radon_bdt = (TH1F*)f_bdt->Get("radon");
   THStack *h_stack_bdt_norm = (THStack*)f_bdt->Get("hs");
 
-  // TFile * f_spectrum = TFile::Open("spectra.root");
-
-  // TH1F *h_0nu_roi = (TH1F*)f_spectrum->Get("energy/Se82.0nubb_source_strips_bulk_");
-  // TH1F *h_2nu_roi = (TH1F*)f_spectrum->Get("energy/Se82.2nubb-2MeV_source_strips_bulk_");
-  // TH1F *h_tl208_roi = (TH1F*)f_spectrum->Get("energy/Tl208_source_strips_bulk_");
-  // TH1F *h_bi214_roi = (TH1F*)f_spectrum->Get("energy/Bi214_Po214_source_strips_bulk_");
-  // TH1F *h_radon_roi = (TH1F*)f_spectrum->Get("energy/Bi214_Po214_field_wire_surface_");
-
   TFile * f_roi = TFile::Open("roi_spectra.root");
 
   TH1F *h_0nu_roi = (TH1F*)f_roi->Get("0nu");
@@ -69,9 +61,13 @@ void sensitivity()
   TH1F *h_radon_roi = (TH1F*)f_roi->Get("radon");
   THStack *h_stack_roi_norm = (THStack*)f_roi->Get("hs");
 
+  TGraphErrors * g_eff_0nu_roi = new TGraphErrors();
+  TGraphErrors * g_eff_2nu_roi = new TGraphErrors();
+  TGraphErrors * g_eff_tl208_roi = new TGraphErrors();
+  TGraphErrors * g_eff_bi214_roi = new TGraphErrors();
+  TGraphErrors * g_eff_radon_roi = new TGraphErrors();
+
   TFile *f_output= new TFile("sensitivity.root","RECREATE");
-
-
 
   TGraphErrors * bdt_significance = new TGraphErrors();
   bdt_significance->SetMarkerSize(2);
@@ -88,6 +84,7 @@ void sensitivity()
   unsigned int nbins = h_0nu_bdt->GetNbinsX();
 
   double best_halflife_limit_bdt = 0;
+  double Ncount_bdt = 0;
 
   for (unsigned int i = 0; i < nbins; ++i) {
     double S = 0;
@@ -116,18 +113,15 @@ void sensitivity()
     double N_radon = eff_radon * conf_sens::eff_radon_2e * conf_sens::tracker_volume * conf_sens::exposure * conf_sens::year2sec * conf_sens::radon_activity;
 
     double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214 + N_radon);
-    double halflife = eff_0nu * conf_sens::k_sens / N_excluded;
+    // double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214);
+    double halflife = eff_0nu * conf_sens::eff_0nu_2e * conf_sens::k_sens / N_excluded;
+
+    if(best_halflife_limit_bdt>halflife)
+      Ncount_bdt = N_excluded;
 
     best_halflife_limit_bdt = std::max(best_halflife_limit_bdt, halflife);
-
     bdt_halflife->SetPoint(i,h_0nu_bdt->GetBinLowEdge(i),halflife);
   }
-
-  // h_0nu_roi->Scale(1./h_0nu_roi->GetEntries());
-  // h_2nu_roi->Scale(1./h_2nu_roi->GetEntries());
-  // h_tl208_roi->Scale(1./h_tl208_roi->GetEntries());
-  // h_bi214_roi->Scale(1./h_bi214_roi->GetEntries());
-  // h_radon_roi->Scale(1./h_radon_roi->GetEntries());
 
   TGraphErrors * roi_significance = new TGraphErrors();
   roi_significance->SetMarkerSize(2);
@@ -142,6 +136,8 @@ void sensitivity()
   roi_halflife->SetTitle("ROI;ROI energy;Halflife");
 
   double best_halflife_limit_roi = 0;
+  double Ncount_roi = 0;
+
   unsigned int nbins_roi = 0;
 
   for (unsigned int i = 0; i < h_0nu_roi->GetNbinsX(); ++i) {
@@ -152,6 +148,12 @@ void sensitivity()
     B += h_tl208_roi->Integral(i,nbins_roi);
     B += h_bi214_roi->Integral(i,nbins_roi);
     B += h_radon_roi->Integral(i,nbins_roi);
+
+    g_eff_0nu_roi->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),h_0nu_roi->Integral(i,nbins)*conf_sens::eff_0nu_2e);
+    g_eff_2nu_roi->SetPoint(i,h_2nu_roi->GetBinLowEdge(i),h_2nu_roi->Integral(i,nbins)*conf_sens::eff_2nu_2e);
+    g_eff_tl208_roi->SetPoint(i,h_tl208_roi->GetBinLowEdge(i),h_tl208_roi->Integral(i,nbins)*conf_sens::eff_tl208_2e);
+    g_eff_bi214_roi->SetPoint(i,h_bi214_roi->GetBinLowEdge(i),h_bi214_roi->Integral(i,nbins)*conf_sens::eff_bi214_2e);
+    g_eff_radon_roi->SetPoint(i,h_radon_roi->GetBinLowEdge(i),h_radon_roi->Integral(i,nbins)*conf_sens::eff_radon_2e);
 
     if(S+B != 0)
       roi_significance->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),S/sqrt(S+B));
@@ -170,7 +172,11 @@ void sensitivity()
     double N_radon = eff_radon * conf_sens::eff_radon_2e * conf_sens::tracker_volume * conf_sens::exposure * conf_sens::year2sec * conf_sens::radon_activity;
 
     double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214 + N_radon);
-    double halflife = eff_0nu * conf_sens::k_sens / N_excluded;
+    // double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214);
+    double halflife = eff_0nu * conf_sens::eff_0nu_2e * conf_sens::k_sens / N_excluded;
+
+    if(best_halflife_limit_roi>halflife)
+      Ncount_roi = N_excluded;
 
     best_halflife_limit_roi = std::max(best_halflife_limit_roi, halflife);
 
@@ -188,7 +194,33 @@ void sensitivity()
   h_stack_bdt_norm->Write();
   h_stack_roi_norm->Write();
 
+  TDirectory *isotope = f_output->mkdir("isotope");
+  isotope->cd();
+
+  h_0nu_bdt->SetName("h_0nu_bdt_norm");
+  h_2nu_bdt->SetName("h_2nu_bdt_norm");
+  h_tl208_bdt->SetName("h_tl208_bdt_norm");
+  h_bi214_bdt->SetName("h_bi214_bdt_norm");
+  h_radon_bdt->SetName("h_radon_bdt_norm");
+  h_0nu_bdt->Write();
+  h_2nu_bdt->Write();
+  h_tl208_bdt->Write();
+  h_bi214_bdt->Write();
+  h_radon_bdt->Write();
+
+  h_0nu_roi->SetName("h_0nu_roi_norm");
+  h_2nu_roi->SetName("h_2nu_roi_norm");
+  h_tl208_roi->SetName("h_tl208_roi_norm");
+  h_bi214_roi->SetName("h_bi214_roi_norm");
+  h_radon_roi->SetName("h_radon_roi_norm");
+  h_0nu_roi->Write();
+  h_2nu_roi->Write();
+  h_tl208_roi->Write();
+  h_bi214_roi->Write();
+  h_radon_roi->Write();
+
   THStack *hs_bdt_count = new THStack("hs_bdt_count","Stacked spectra");
+  h_0nu_bdt->Scale(10);
   h_2nu_bdt->Scale(conf_sens::eff_2nu_2e * conf_sens::k_sens / conf_sens::T_2nu );
   h_tl208_bdt->Scale(conf_sens::eff_tl208_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::tl208_activity );
   h_bi214_bdt->Scale(conf_sens::eff_bi214_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::bi214_activity );
@@ -200,9 +232,11 @@ void sensitivity()
   hs_bdt_count->Add(h_radon_bdt);
   hs_bdt_count->Add(h_0nu_bdt);
 
+  f_output->cd();
   hs_bdt_count->Write();
 
   THStack *hs_roi_count = new THStack("hs_roi_count","Stacked spectra");
+  h_0nu_roi->Scale(10);
   h_2nu_roi->Scale(conf_sens::eff_2nu_2e * conf_sens::k_sens / conf_sens::T_2nu );
   h_tl208_roi->Scale(conf_sens::eff_tl208_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::tl208_activity );
   h_bi214_roi->Scale(conf_sens::eff_bi214_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::bi214_activity );
@@ -216,14 +250,78 @@ void sensitivity()
 
   hs_roi_count->Write();
 
-  std::cout << " Best halflives " << std::endl;
-  std::cout << "     BDT :  "  << best_halflife_limit_bdt << std::endl;
-  std::cout << "     ROI :  "  << best_halflife_limit_roi << std::endl;
+  isotope->cd();
 
+  h_0nu_bdt->SetName("h_0nu_bdt_count");
+  h_2nu_bdt->SetName("h_2nu_bdt_count");
+  h_tl208_bdt->SetName("h_tl208_bdt_count");
+  h_bi214_bdt->SetName("h_bi214_bdt_count");
+  h_radon_bdt->SetName("h_radon_bdt_count");
+  h_0nu_bdt->Write();
+  h_2nu_bdt->Write();
+  h_tl208_bdt->Write();
+  h_bi214_bdt->Write();
+  h_radon_bdt->Write();
+
+  h_0nu_roi->SetName("h_0nu_roi_count");
+  h_2nu_roi->SetName("h_2nu_roi_count");
+  h_tl208_roi->SetName("h_tl208_roi_count");
+  h_bi214_roi->SetName("h_bi214_roi_count");
+  h_radon_roi->SetName("h_radon_roi_count");
+  h_0nu_roi->Write();
+  h_2nu_roi->Write();
+  h_tl208_roi->Write();
+  h_bi214_roi->Write();
+  h_radon_roi->Write();
+
+  std::cout << " Best halflives " << std::endl;
+  std::cout << "     BDT :  "  << best_halflife_limit_bdt << "  ,   N_bg = " << Ncount_bdt << std::endl;
+  std::cout << "     ROI :  "  << best_halflife_limit_roi << "  ,   N_bg = " << Ncount_roi << std::endl;
+  std::cout << " Best halflives " << std::endl;
+
+  f_output->cd();
   bdt_halflife->SetName("bdt_halflife");
   roi_halflife->SetName("roi_halflife");
   bdt_halflife->Write();
   roi_halflife->Write();
+
+  TDirectory *efficiencies = f_output->mkdir("efficiencies");
+  efficiencies->cd();
+  g_eff_0nu_roi->SetName("g_eff_0nu_roi");
+  g_eff_0nu_roi->SetTitle("0#nu efficiency;Energy;Efficiency");
+  g_eff_0nu_roi->SetDrawOption("AL");
+  g_eff_0nu_roi->SetLineColor(kRed);
+  g_eff_0nu_roi->SetLineWidth(2);
+  g_eff_0nu_roi->Write();
+
+  g_eff_2nu_roi->SetName("g_eff_2nu_roi");
+  g_eff_2nu_roi->SetTitle("2#nu efficiency;Energy;Efficiency");
+  g_eff_2nu_roi->SetDrawOption("AL");
+  g_eff_2nu_roi->SetLineColor(kBlue);
+  g_eff_2nu_roi->SetLineWidth(2);
+  g_eff_2nu_roi->Write();
+
+  g_eff_tl208_roi->SetName("g_eff_tl208_roi");
+  g_eff_tl208_roi->SetTitle("^{208}Tl efficiency;Energy;Efficiency");
+  g_eff_tl208_roi->SetDrawOption("AL");
+  g_eff_tl208_roi->SetLineColor(kGreen+1);
+  g_eff_tl208_roi->SetLineWidth(2);
+  g_eff_tl208_roi->Write();
+
+  g_eff_bi214_roi->SetName("g_eff_bi214_roi");
+  g_eff_bi214_roi->SetTitle("^{214}Bi efficiency;Energy;Efficiency");
+  g_eff_bi214_roi->SetDrawOption("AL");
+  g_eff_bi214_roi->SetLineColor(kOrange-3);
+  g_eff_bi214_roi->SetLineWidth(2);
+  g_eff_bi214_roi->Write();
+
+  g_eff_radon_roi->SetName("g_eff_radon_roi");
+  g_eff_radon_roi->SetTitle("Radon efficiency;Energy;Efficiency");
+  g_eff_radon_roi->SetDrawOption("AL");
+  g_eff_radon_roi->SetLineColor(kMagenta);
+  g_eff_radon_roi->SetLineWidth(2);
+  g_eff_radon_roi->Write();
+
   // h_0nu_bdt->Draw("");
   // h_2nu_bdt->Draw("same");
   // h_tl208_bdt->Draw("same");
