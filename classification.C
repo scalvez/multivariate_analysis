@@ -162,10 +162,10 @@ void classification( TString myMethodList = "" )
 
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
-   // factory->AddBackgroundTree( background_2nu, backgroundWeight );
+   factory->AddBackgroundTree( background_2nu, backgroundWeight );
    factory->AddBackgroundTree( background_tl208, backgroundWeight );
-   // factory->AddBackgroundTree( background_bi214, backgroundWeight );
-   // factory->AddBackgroundTree( background_radon, backgroundWeight );
+   factory->AddBackgroundTree( background_bi214, backgroundWeight );
+   factory->AddBackgroundTree( background_radon, backgroundWeight );
 
    // factory->SetBackgroundWeightExpression( "weight" );
 
@@ -326,7 +326,7 @@ void classification( TString myMethodList = "" )
 
    if (Use["BDT"])  // Adaptive Boost
       factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                           "!H:!V:NTrees=800:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=100" );
+                           "!H:!V:NTrees=800:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
 
    if (Use["BDTB"]) // Bagging
       factory->BookMethod( TMVA::Types::kBDT, "BDTB",

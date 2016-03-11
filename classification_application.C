@@ -41,9 +41,9 @@ void classification_application( TString myMethodList = "" )
   Use["CutsSA"]          = 0;
   //
   // --- 1-dimensional likelihood ("naive Bayes estimator")
-  Use["Likelihood"]      = 1;
+  Use["Likelihood"]      = 0;
   Use["LikelihoodD"]     = 0; // the "D" extension indicates decorrelated input variables (see option strings)
-  Use["LikelihoodPCA"]   = 1; // the "PCA" extension indicates PCA-transformed input variables (see option strings)
+  Use["LikelihoodPCA"]   = 0; // the "PCA" extension indicates PCA-transformed input variables (see option strings)
   Use["LikelihoodKDE"]   = 0;
   Use["LikelihoodMIX"]   = 0;
   //
@@ -71,7 +71,7 @@ void classification_application( TString myMethodList = "" )
   Use["FDA_MCMT"]        = 0;
   //
   // --- Neural Networks (all are feed-forward Multilayer Perceptrons)
-  Use["MLP"]             = 1; // Recommended ANN
+  Use["MLP"]             = 0; // Recommended ANN
   Use["MLPBFGS"]         = 0; // Recommended ANN with optional training method
   Use["MLPBNN"]          = 0; // Recommended ANN with BFGS training method and bayesian regulator
   Use["CFMlpANN"]        = 0; // Depreciated ANN from ALEPH
@@ -232,7 +232,8 @@ void classification_application( TString myMethodList = "" )
   // we'll later on use only the "signal" events for the test in this example.
   //
   TFile *input(0);
-  TString fname = "./chain.root";
+  // TString fname = "./data.root";
+  TString fname = "./root_export_0nu_25G.root";
 
   input = TFile::Open( fname ); // check if file in local directory exists
 
@@ -287,7 +288,7 @@ void classification_application( TString myMethodList = "" )
   std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
   TStopwatch sw;
   sw.Start();
-  for (Long64_t ievt=0; ievt<170000;ievt++) {
+  for (Long64_t ievt=0; ievt<5000;ievt++) {
   // for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
     if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
