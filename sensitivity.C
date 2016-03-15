@@ -42,7 +42,6 @@ double get_number_of_excluded_events(const double number_of_events_)
 
 void sensitivity()
 {
-
   TFile * f_bdt = TFile::Open("bdt_scores.root");
 
   TH1F *h_0nu_bdt = (TH1F*)f_bdt->Get("0nu");
@@ -91,6 +90,10 @@ void sensitivity()
 
   double best_halflife_limit_bdt = 0;
   double Ncount_bdt = 0;
+  double N_2nu_bdt = 0;
+  double N_tl_bdt = 0;
+  double N_bi_bdt = 0;
+  double N_radon_bdt = 0;
 
   for (unsigned int i = 0; i < nbins; ++i) {
     double S = 0;
@@ -130,6 +133,10 @@ void sensitivity()
 
     if(best_halflife_limit_bdt<halflife) {
       Ncount_bdt = N_excluded;
+      N_2nu_bdt = N_2nu;
+      N_tl_bdt = N_tl208;
+      N_bi_bdt = N_bi214;
+      N_radon_bdt = N_radon;
     }
 
     best_halflife_limit_bdt = std::max(best_halflife_limit_bdt, halflife);
@@ -150,8 +157,12 @@ void sensitivity()
 
   double best_halflife_limit_roi = 0;
   double Ncount_roi = 0;
+  double N_2nu_roi = 0;
+  double N_tl_roi = 0;
+  double N_bi_roi = 0;
+  double N_radon_roi = 0;
 
-  unsigned int nbins_roi = 0;
+  unsigned int nbins_roi = h_0nu_roi->GetNbinsX();
 
   for (unsigned int i = 0; i < h_0nu_roi->GetNbinsX(); ++i) {
     double S = 0;
@@ -162,38 +173,82 @@ void sensitivity()
     B += h_bi214_roi->Integral(i,nbins_roi);
     B += h_radon_roi->Integral(i,nbins_roi);
 
-    g_eff_0nu_roi->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),h_0nu_roi->Integral(i,nbins)*conf_sens::eff_0nu_2e);
-    g_eff_2nu_roi->SetPoint(i,h_2nu_roi->GetBinLowEdge(i),h_2nu_roi->Integral(i,nbins)*conf_sens::eff_2nu_2e);
-    g_eff_tl208_roi->SetPoint(i,h_tl208_roi->GetBinLowEdge(i),h_tl208_roi->Integral(i,nbins)*conf_sens::eff_tl208_2e);
-    g_eff_bi214_roi->SetPoint(i,h_bi214_roi->GetBinLowEdge(i),h_bi214_roi->Integral(i,nbins)*conf_sens::eff_bi214_2e);
-    g_eff_radon_roi->SetPoint(i,h_radon_roi->GetBinLowEdge(i),h_radon_roi->Integral(i,nbins)*conf_sens::eff_radon_2e);
+    g_eff_0nu_roi->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),h_0nu_roi->Integral(i,nbins_roi)*conf_sens::eff_0nu_2e);
+    g_eff_2nu_roi->SetPoint(i,h_2nu_roi->GetBinLowEdge(i),h_2nu_roi->Integral(i,nbins_roi)*conf_sens::eff_2nu_2e);
+    g_eff_tl208_roi->SetPoint(i,h_tl208_roi->GetBinLowEdge(i),h_tl208_roi->Integral(i,nbins_roi)*conf_sens::eff_tl208_2e);
+    g_eff_bi214_roi->SetPoint(i,h_bi214_roi->GetBinLowEdge(i),h_bi214_roi->Integral(i,nbins_roi)*conf_sens::eff_bi214_2e);
+    g_eff_radon_roi->SetPoint(i,h_radon_roi->GetBinLowEdge(i),h_radon_roi->Integral(i,nbins_roi)*conf_sens::eff_radon_2e);
 
     if(S+B != 0)
       roi_significance->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),S/sqrt(S+B));
     else
       roi_significance->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),0);
 
-    double eff_0nu = h_0nu_roi->Integral(i,nbins); // normalized to 1
+    double eff_0nu = h_0nu_roi->Integral(i,nbins_roi); // normalized to 1
 
-    double eff_2nu = h_2nu_roi->Integral(i,nbins); // normalized to 1
+    double eff_2nu = h_2nu_roi->Integral(i,nbins_roi); // normalized to 1
     double N_2nu = eff_2nu * conf_sens::eff_2nu_2e * conf_sens::k_sens / conf_sens::T_2nu;
-    double eff_tl208 = h_tl208_roi->Integral(i,nbins);
+    double eff_tl208 = h_tl208_roi->Integral(i,nbins_roi);
     double N_tl208 = eff_tl208 * conf_sens::eff_tl208_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::tl208_activity;
-    double eff_bi214 = h_bi214_roi->Integral(i,nbins);
+    double eff_bi214 = h_bi214_roi->Integral(i,nbins_roi);
     double N_bi214 = eff_bi214 * conf_sens::eff_bi214_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::bi214_activity;
-    double eff_radon = h_radon_roi->Integral(i,nbins);
+    double eff_radon = h_radon_roi->Integral(i,nbins_roi);
     double N_radon = eff_radon * conf_sens::eff_radon_2e * conf_sens::tracker_volume * conf_sens::exposure * conf_sens::year2sec * conf_sens::radon_activity;
 
     double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214 + N_radon);
     // double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214);
     double halflife = eff_0nu * conf_sens::eff_0nu_2e * conf_sens::k_sens / N_excluded;
 
-    if(best_halflife_limit_roi<halflife)
+    if(best_halflife_limit_roi<halflife) {
       Ncount_roi = N_excluded;
-
+      N_2nu_roi = N_2nu;
+      N_tl_roi = N_tl208;
+      N_bi_roi = N_bi214;
+      N_radon_roi = N_radon;
+    }
     best_halflife_limit_roi = std::max(best_halflife_limit_roi, halflife);
 
     roi_halflife->SetPoint(i,h_0nu_roi->GetBinLowEdge(i),halflife);
+  }
+
+  //2D window optimization
+
+  TH2F * halflife_2d_roi = new TH2F("halflife_2d_roi","halflife_2d_roi",h_0nu_roi->GetNbinsX(),0,4000,h_0nu_roi->GetNbinsX(),0,4000);
+
+  double best_halflife_limit_roi_2d = 0;
+  double Ncount_roi_2d = 0;
+  double N_2nu_roi_2d = 0;
+  double N_tl_roi_2d = 0;
+  double N_bi_roi_2d = 0;
+  double N_radon_roi_2d = 0;
+
+  for (unsigned int i = 0; i < h_0nu_roi->GetNbinsX(); ++i) {
+    for(unsigned int j = i; j < h_0nu_roi->GetNbinsX(); ++j) {
+      double eff_0nu = h_0nu_roi->Integral(i,j); // normalized to 1
+      double eff_2nu = h_2nu_roi->Integral(i,j); // normalized to 1
+      double N_2nu = eff_2nu * conf_sens::eff_2nu_2e * conf_sens::k_sens / conf_sens::T_2nu;
+      double eff_tl208 = h_tl208_roi->Integral(i,j);
+      double N_tl208 = eff_tl208 * conf_sens::eff_tl208_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::tl208_activity;
+      double eff_bi214 = h_bi214_roi->Integral(i,j);
+      double N_bi214 = eff_bi214 * conf_sens::eff_bi214_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::bi214_activity;
+      double eff_radon = h_radon_roi->Integral(i,j);
+      double N_radon = eff_radon * conf_sens::eff_radon_2e * conf_sens::tracker_volume * conf_sens::exposure * conf_sens::year2sec * conf_sens::radon_activity;
+
+      double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214 + N_radon);
+      // double N_excluded = get_number_of_excluded_events(N_2nu + N_tl208 + N_bi214);
+      double halflife = eff_0nu * conf_sens::eff_0nu_2e * conf_sens::k_sens / N_excluded;
+
+      if(best_halflife_limit_roi_2d<halflife) {
+        Ncount_roi_2d = N_excluded;
+        N_2nu_roi_2d = N_2nu;
+        N_tl_roi_2d = N_tl208;
+        N_bi_roi_2d = N_bi214;
+        N_radon_roi_2d = N_radon;
+      }
+      best_halflife_limit_roi_2d = std::max(best_halflife_limit_roi_2d, halflife);
+
+      halflife_2d_roi->SetBinContent(i,j,halflife);
+    }
   }
 
   // bdt_significance->Draw("AP");
@@ -239,10 +294,10 @@ void sensitivity()
   h_bi214_bdt->Scale(conf_sens::eff_bi214_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::bi214_activity );
   h_radon_bdt->Scale(conf_sens::eff_radon_2e * conf_sens::tracker_volume * conf_sens::exposure * conf_sens::year2sec * conf_sens::radon_activity );
 
-  hs_bdt_count->Add(h_2nu_bdt);
   hs_bdt_count->Add(h_tl208_bdt);
   hs_bdt_count->Add(h_bi214_bdt);
   hs_bdt_count->Add(h_radon_bdt);
+  hs_bdt_count->Add(h_2nu_bdt);
   hs_bdt_count->Add(h_0nu_bdt);
 
   f_output->cd();
@@ -255,10 +310,10 @@ void sensitivity()
   h_bi214_roi->Scale(conf_sens::eff_bi214_2e * conf_sens::isotope_mass * conf_sens::exposure * conf_sens::year2sec * conf_sens::bi214_activity);
   h_radon_roi->Scale(conf_sens::eff_radon_2e * conf_sens::tracker_volume * conf_sens::exposure * conf_sens::year2sec * conf_sens::radon_activity);
 
-  hs_roi_count->Add(h_2nu_roi);
   hs_roi_count->Add(h_tl208_roi);
   hs_roi_count->Add(h_bi214_roi);
   hs_roi_count->Add(h_radon_roi);
+  hs_roi_count->Add(h_2nu_roi);
   hs_roi_count->Add(h_0nu_roi);
 
   hs_roi_count->Write();
@@ -288,14 +343,20 @@ void sensitivity()
   h_radon_roi->Write();
 
   std::cout << " Best halflives " << std::endl;
-  std::cout << "     BDT :  "  << best_halflife_limit_bdt << "  ,   N_bg = " << Ncount_bdt << std::endl;
-  std::cout << "     ROI :  "  << best_halflife_limit_roi << "  ,   N_bg = " << Ncount_roi << std::endl;
+  std::cout << "     BDT    :  "  << best_halflife_limit_bdt << "  ,   N_bg = " << Ncount_bdt
+            << "  (N_2nu = " << N_2nu_bdt << ", N_tl = " << N_tl_bdt << ", N_bi = " << N_bi_bdt << ", N_radon = " << N_radon_bdt << ")" << std::endl;
+  std::cout << "     ROI    :  "  << best_halflife_limit_roi << "  ,   N_bg = " << Ncount_roi
+              << "  (N_2nu = " << N_2nu_roi << ", N_tl = " << N_tl_roi << ", N_bi = " << N_bi_roi << ", N_radon = " << N_radon_roi << ")" << std::endl;
+ std::cout << "     ROI 2D :  "  << best_halflife_limit_roi_2d << "  ,   N_bg = " << Ncount_roi_2d
+              << "  (N_2nu = " << N_2nu_roi_2d << ", N_tl = " << N_tl_roi_2d << ", N_bi = " << N_bi_roi_2d << ", N_radon = " << N_radon_roi_2d << ")" << std::endl;
 
   f_output->cd();
   bdt_halflife->SetName("bdt_halflife");
   roi_halflife->SetName("roi_halflife");
+  halflife_2d_roi->SetName("roi_halflife_2d");
   bdt_halflife->Write();
   roi_halflife->Write();
+  halflife_2d_roi->Write();
 
   TDirectory *efficiencies = f_output->mkdir("efficiencies");
   efficiencies->cd();
