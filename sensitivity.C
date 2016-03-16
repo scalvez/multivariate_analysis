@@ -22,26 +22,9 @@
 
 #include "config_sensitivity.h"
 
-double get_number_of_excluded_events(const double number_of_events_)
-{
-  double number_of_excluded_events = 0.0;
-  if (number_of_events_ < 29.0)
-    {
-      double x = number_of_events_;
-      number_of_excluded_events =
-        2.5617 + 0.747661 * x - 0.0666176 * std::pow(x,2)
-        + 0.00432457 * std::pow(x,3) - 0.000139343 * std::pow(x,4)
-        + 1.71509e-06 * std::pow(x,5);
-    }
-  else
-    {
-      number_of_excluded_events = 1.64 * std::sqrt(number_of_events_);
-    }
-  return number_of_excluded_events;
-}
-
 void sensitivity()
 {
+  double tmp_eff = 0;
   TFile * f_bdt = TFile::Open("bdt_scores.root");
 
   TH1F *h_0nu_bdt = (TH1F*)f_bdt->Get("0nu");
@@ -95,6 +78,9 @@ void sensitivity()
   double N_bi_bdt = 0;
   double N_radon_bdt = 0;
 
+  int best_bdt_cut_bin = 0;
+  double best_bdt_cut_score = 0;
+
   for (unsigned int i = 0; i < nbins; ++i) {
     double S = 0;
     double B = 0;
@@ -137,6 +123,9 @@ void sensitivity()
       N_tl_bdt = N_tl208;
       N_bi_bdt = N_bi214;
       N_radon_bdt = N_radon;
+      best_bdt_cut_bin = i;
+      best_bdt_cut_score = h_0nu_bdt->GetBinLowEdge(i);
+
     }
 
     best_halflife_limit_bdt = std::max(best_halflife_limit_bdt, halflife);
@@ -161,6 +150,10 @@ void sensitivity()
   double N_tl_roi = 0;
   double N_bi_roi = 0;
   double N_radon_roi = 0;
+  int lower_window_bin = 0;
+  int upper_window_bin = 0;
+  double lower_window_energy = 0;
+  double upper_window_energy = 0;
 
   unsigned int nbins_roi = h_0nu_roi->GetNbinsX();
 
@@ -244,12 +237,17 @@ void sensitivity()
         N_tl_roi_2d = N_tl208;
         N_bi_roi_2d = N_bi214;
         N_radon_roi_2d = N_radon;
+        lower_window_bin = i;
+        upper_window_bin = j;
+        lower_window_energy = h_0nu_roi->GetBinLowEdge(i);
+        upper_window_energy = h_0nu_roi->GetBinLowEdge(j);
       }
       best_halflife_limit_roi_2d = std::max(best_halflife_limit_roi_2d, halflife);
 
       halflife_2d_roi->SetBinContent(i,j,halflife);
     }
   }
+  tmp_eff = h_0nu_roi->Integral(lower_window_bin,upper_window_bin)*conf_sens::eff_0nu_2e;
 
   // bdt_significance->Draw("AP");
   bdt_significance->SetName("bdt_significance_norm");
@@ -345,10 +343,14 @@ void sensitivity()
   std::cout << " Best halflives " << std::endl;
   std::cout << "     BDT    :  "  << best_halflife_limit_bdt << "  ,   N_bg = " << Ncount_bdt
             << "  (N_2nu = " << N_2nu_bdt << ", N_tl = " << N_tl_bdt << ", N_bi = " << N_bi_bdt << ", N_radon = " << N_radon_bdt << ")" << std::endl;
+  std::cout << "      Cut is  " << best_bdt_cut_bin << "  or  " << best_bdt_cut_score << std::endl;
   std::cout << "     ROI    :  "  << best_halflife_limit_roi << "  ,   N_bg = " << Ncount_roi
               << "  (N_2nu = " << N_2nu_roi << ", N_tl = " << N_tl_roi << ", N_bi = " << N_bi_roi << ", N_radon = " << N_radon_roi << ")" << std::endl;
  std::cout << "     ROI 2D :  "  << best_halflife_limit_roi_2d << "  ,   N_bg = " << Ncount_roi_2d
               << "  (N_2nu = " << N_2nu_roi_2d << ", N_tl = " << N_tl_roi_2d << ", N_bi = " << N_bi_roi_2d << ", N_radon = " << N_radon_roi_2d << ")" << std::endl;
+  std::cout << "      Lower window is  " << lower_window_bin << "  or  " << lower_window_energy << std::endl;
+  std::cout << "      Upper window is  " << upper_window_bin << "  or  " << upper_window_energy << std::endl;
+  std::cout << " eff " << tmp_eff <<std::endl;
 
   f_output->cd();
   bdt_halflife->SetName("bdt_halflife");

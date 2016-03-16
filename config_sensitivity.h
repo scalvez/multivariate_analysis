@@ -1,6 +1,24 @@
 #ifndef conf_sensitivity_h
 #define conf_sensitivity_h
 
+double get_number_of_excluded_events(const double number_of_events_)
+{
+  double number_of_excluded_events = 0.0;
+  if (number_of_events_ < 29.0)
+    {
+      double x = number_of_events_;
+      number_of_excluded_events =
+        2.5617 + 0.747661 * x - 0.0666176 * std::pow(x,2)
+        + 0.00432457 * std::pow(x,3) - 0.000139343 * std::pow(x,4)
+        + 1.71509e-06 * std::pow(x,5);
+    }
+  else
+    {
+      number_of_excluded_events = 1.64 * std::sqrt(number_of_events_);
+    }
+  return number_of_excluded_events;
+}
+
 namespace conf_sens {
 
   const double year2sec = 3600 * 24 * 365.25;
@@ -32,6 +50,8 @@ namespace conf_sens {
 
   const double k_sens = log(2) * 6.022e23  * isotope_mass * 1000 * exposure / isotope_mass_number;
 
+  const double eff_0nu_bdt_window = 0.1366;
+  const double eff_0nu_roi_window = 0.1502;
 }
 
 #endif
