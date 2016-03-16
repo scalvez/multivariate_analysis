@@ -1,7 +1,7 @@
 #!/bin/bash
 
 (
-    for isotope_str in 0nu 2nu tl208 bi214
+    for isotope_str in 0nu 2nu tl208 bi214 radon
     do
         echo "Isotope : $isotope_str"
 
