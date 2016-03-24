@@ -11,7 +11,6 @@
 #include "TSystem.h"
 #include "TROOT.h"
 
-
 #if not defined(__CINT__) || defined(__MAKECINT__)
 // needs to be included when makecint runs (ACLIC)
 #include "TMVA/Factory.h"
@@ -32,16 +31,16 @@ void classification( TString myMethodList = "" )
    std::map<std::string,int> Use;
 
    // --- Cut optimisation
-   Use["Cuts"]            = 1;
-   Use["CutsD"]           = 1;
+   Use["Cuts"]            = 0;
+   Use["CutsD"]           = 0;
    Use["CutsPCA"]         = 0;
    Use["CutsGA"]          = 0;
    Use["CutsSA"]          = 0;
    //
    // --- 1-dimensional likelihood ("naive Bayes estimator")
-   Use["Likelihood"]      = 1;
+   Use["Likelihood"]      = 0;
    Use["LikelihoodD"]     = 0; // the "D" extension indicates decorrelated input variables (see option strings)
-   Use["LikelihoodPCA"]   = 1; // the "PCA" extension indicates PCA-transformed input variables (see option strings)
+   Use["LikelihoodPCA"]   = 0; // the "PCA" extension indicates PCA-transformed input variables (see option strings)
    Use["LikelihoodKDE"]   = 0;
    Use["LikelihoodMIX"]   = 0;
    //
@@ -54,7 +53,7 @@ void classification( TString myMethodList = "" )
    Use["KNN"]             = 0; // k-nearest neighbour method
    //
    // --- Linear Discriminant Analysis
-   Use["LD"]              = 1; // Linear Discriminant identical to Fisher
+   Use["LD"]              = 0; // Linear Discriminant identical to Fisher
    Use["Fisher"]          = 0;
    Use["FisherG"]         = 0;
    Use["BoostedFisher"]   = 0; // uses generalised MVA method boosting
@@ -118,16 +117,18 @@ void classification( TString myMethodList = "" )
    TString outfileName( "TMVA.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
+   // TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
+   //                                             "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
    TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
-                                               "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;P;G,D:AnalysisType=Classification" );
+                                               "!V:!Silent:Color:DrawProgressBar:Transformations=I;:AnalysisType=Classification" );
 
    factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
    factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
-   factory->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy ", "Electrons energy sum", "MeV", 'F' );
-   factory->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy ", "Electrons energy difference", "MeV", 'F' );
-   factory->AddVariable( "2e_electrons_internal_probability", "Electrons internal probability", "", 'F' );
-   factory->AddVariable( "2e_electrons_external_probability", "Electrons external probability", "", 'F' );
-   factory->AddVariable( "2e_electrons_vertices_probability", "Electrons vertices probability", "", 'F' );
+   factory->AddVariable( "2e_electrons_energy_sum", "Electrons energy sum", "MeV", 'F' );
+   factory->AddVariable( "2e_electrons_energy_difference", "Electrons energy difference", "MeV", 'F' );
+   factory->AddVariable( "2e_electrons_internal_probability", "Electrons internal probability","",'F' );
+   factory->AddVariable( "2e_electrons_external_probability", "Electrons external probability","",'F' );
+   factory->AddVariable( "2e_electrons_vertices_probability", "Electrons vertices probability","",'F' );
    factory->AddVariable( "2e_electrons_cos_angle", "Electrons cos(angle)", "", 'F' );
    factory->AddVariable( "2e_electron_Emin_track_length", "Electron of minimal energy track length", "mm", 'F' );
    factory->AddVariable( "2e_electron_Emax_track_length", "Electron of maximal energy track length", "mm", 'F' );
@@ -138,7 +139,7 @@ void classification( TString myMethodList = "" )
    TString fname_background_2nu = "./root_export_2nu_25G.root";
    TString fname_background_tl208 = "./root_export_tl208_25G.root";
    TString fname_background_bi214 = "./root_export_bi214_25G.root";
-   TString fname_background_radon = "./root_export_bi214_wire_25G.root";
+   TString fname_background_radon = "./root_export_radon_25G.root";
 
    TFile *input_signal = TFile::Open( fname_signal );
    TFile *input_background_2nu = TFile::Open( fname_background_2nu );
@@ -146,18 +147,20 @@ void classification( TString myMethodList = "" )
    TFile *input_background_bi214 = TFile::Open( fname_background_bi214 );
    TFile *input_background_radon = TFile::Open( fname_background_radon );
 
+   (TMVA::gConfig().GetVariablePlotting()).fNbins1D = 100.0;
+
    std::cout << "--- Classification       : Using input file(s): " << input_signal->GetName() << std::endl << input_background_2nu->GetName() << "and others..." << std::endl;
 
    // --- Register the training and test trees
 
-   TTree *signal = (TTree*)input_signal->Get("snemodata;1");
-   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;1");
-   TTree *background_tl208 = (TTree*)input_background_tl208->Get("snemodata;1");
-   TTree *background_bi214 = (TTree*)input_background_bi214->Get("snemodata;1");
-   TTree *background_radon = (TTree*)input_background_radon->Get("snemodata;1");
+   TTree *signal = (TTree*)input_signal->Get("snemodata;");
+   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;");
+   TTree *background_tl208 = (TTree*)input_background_tl208->Get("snemodata;");
+   TTree *background_bi214 = (TTree*)input_background_bi214->Get("snemodata;");
+   TTree *background_radon = (TTree*)input_background_radon->Get("snemodata;");
 
    // global event weights per tree (see below for setting event-wise weights)
-   Double_t signalWeight     = 1.0;
+   Double_t signalWeight     = 0.0000000001;
    Double_t backgroundWeight = 1.0;
 
    // You can add an arbitrary number of signal or background trees
@@ -322,11 +325,40 @@ void classification( TString myMethodList = "" )
    // Boosted Decision Trees
    if (Use["BDTG"]) // Gradient Boost
       factory->BookMethod( TMVA::Types::kBDT, "BDTG",
-                           "!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=20:MaxDepth=2" );
+                           "!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2" );
 
+   // Slight improvement
    if (Use["BDT"])  // Adaptive Boost
-      factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                           "!H:!V:NTrees=800:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=GiniIndex:nCuts=20" );
+     factory->BookMethod( TMVA::Types::kBDT, "BDT",
+                          "!H:!V:NTrees=800:MinNodeSize=0.00000000000000000000000001%:SeparationType=GiniIndex:nCuts=100");
+
+   // // standard
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=1000:MinNodeSize=0.000000000000000000001%:MaxDepth=3:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=1000" );
+
+   // // standard
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=1:MinNodeSize=0.000000000000000000001%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=1000" );
+
+   // // conf A
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=850:MinNodeSize=0.000000000000000001%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=1000" );
+
+   // conf B
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=850:MinNodeSize=2.5%:MaxDepth=1:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=100" );
+
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=5%:MaxDepth=3:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=100" );
+
+    // if (Use["BDT"])  // Adaptive Boost
+    //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+    //                        "!H:!V:NTrees=800:MinNodeSize=5%:MaxDepth=4:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=50" );
 
    if (Use["BDTB"]) // Bagging
       factory->BookMethod( TMVA::Types::kBDT, "BDTB",

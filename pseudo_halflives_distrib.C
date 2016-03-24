@@ -21,8 +21,8 @@
 
 void pseudo_halflives_distrib()
 {
-  TH1F *h_hl_bdt = new TH1F("h_hl_bdt","h_hl_bdt",50,1,6);
-  TH1F *h_hl_roi = new TH1F("h_hl_roi","h_hl_roi",50,1,6);
+  TH1F *h_hl_bdt = new TH1F("h_hl_bdt","h_hl_bdt",50,0.1,6.1);
+  TH1F *h_hl_roi = new TH1F("h_hl_roi","h_hl_roi",50,0.1,6.1);
 
   char channel[200];
   int  nevent;

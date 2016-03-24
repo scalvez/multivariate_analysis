@@ -8,7 +8,7 @@
         isotope=$isotope_str
         bb='2nu'
         if [ "$isotope" = "$bb" ]; then
-            sed -i -e 's@.*Long64.*@for (Long64_t ievt=0; ievt<20000;ievt++) {@g' classification_application.C
+            sed -i -e 's@.*Long64.*@for (Long64_t ievt=50000; ievt<75000;ievt++) {@g' classification_application.C
        fi
 
         sed -i -e 's@.*TString fname.*@TString fname = "./root_export_'$isotope_str'_25G.root";@g' classification_application.C
@@ -19,6 +19,7 @@
         if [ $isotope = $bb ]; then
             sed -i -e 's@.*Long64.*@for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {@g' classification_application.C
         fi
-
     done
+        root -l -b bdt_score.C
+
 )

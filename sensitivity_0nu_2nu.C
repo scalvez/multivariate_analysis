@@ -26,6 +26,7 @@ void sensitivity_0nu_2nu()
 {
   double tmp_eff = 0;
   TFile * f_bdt = TFile::Open("bdt_scores_0nu_2nu.root");
+  // TFile * f_bdt = TFile::Open("test.root");
 
   TH1F *h_0nu_bdt = (TH1F*)f_bdt->Get("0nu");
   TH1F *h_2nu_bdt = (TH1F*)f_bdt->Get("2nu");

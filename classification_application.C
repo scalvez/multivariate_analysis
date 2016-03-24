@@ -34,8 +34,8 @@ void classification_application( TString myMethodList = "" )
   std::map<std::string,int> Use;
 
   // --- Cut optimisation
-  Use["Cuts"]            = 1;
-  Use["CutsD"]           = 1;
+  Use["Cuts"]            = 0;
+  Use["CutsD"]           = 0;
   Use["CutsPCA"]         = 0;
   Use["CutsGA"]          = 0;
   Use["CutsSA"]          = 0;
@@ -139,26 +139,16 @@ void classification_application( TString myMethodList = "" )
   Float_t electron_Emin_track_length = 0;
   Float_t electron_Emax_track_length = 0;
 
-  // Double_t electron_minimal_energy = 0;
-  // Double_t electron_maximal_energy = 0;
-  // Double_t electrons_energy_sum = 0;
-  // Double_t electrons_energy_difference = 0;
-
   reader->AddVariable( "2e_electron_minimal_energy", & electron_minimal_energy );
   reader->AddVariable( "2e_electron_maximal_energy", & electron_maximal_energy );
-  reader->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy", &electrons_energy_sum );
-  reader->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy", &electrons_energy_difference );
+  reader->AddVariable( "2e_electrons_energy_sum", &electrons_energy_sum );
+  reader->AddVariable( "2e_electrons_energy_difference", &electrons_energy_difference );
   reader->AddVariable( "2e_electrons_internal_probability", &electrons_internal_probability );
   reader->AddVariable( "2e_electrons_external_probability", &electrons_external_probability );
   reader->AddVariable( "2e_electrons_vertices_probability", &electrons_vertices_probability );
   reader->AddVariable( "2e_electrons_cos_angle", &electrons_cos_angle );
   reader->AddVariable( "2e_electron_Emin_track_length", &electron_Emin_track_length );
   reader->AddVariable( "2e_electron_Emax_track_length", &electron_Emax_track_length );
-
-  // reader->AddVariable( "2e_electron_minimal_energy", &((Float_t) electron_minimal_energy) );
-  // reader->AddVariable( "2e_electron_maximal_energy", &((Float_t)electron_maximal_energy) );
-  // reader->AddVariable( "2e_electrons_energy_sum := 2e_electron_minimal_energy+2e_electron_maximal_energy", &((Float_t)electrons_energy_sum) );
-  // reader->AddVariable( "2e_electrons_energy_difference := 2e_electron_maximal_energy-2e_electron_minimal_energy", &((Float_t)electrons_energy_difference) );
 
   // --- Book the MVA methods
 
@@ -201,7 +191,8 @@ void classification_application( TString myMethodList = "" )
   if (Use["MLPBNN"])        histNnbnn   = new TH1F( "MVA_MLPBNN",        "MVA_MLPBNN",        nbin, -1.25, 1.5 );
   if (Use["CFMlpANN"])      histNnC     = new TH1F( "MVA_CFMlpANN",      "MVA_CFMlpANN",      nbin,  0, 1 );
   if (Use["TMlpANN"])       histNnT     = new TH1F( "MVA_TMlpANN",       "MVA_TMlpANN",       nbin, -1.3, 1.3 );
-  if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -0.8, 0.8 );
+  if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -1.1, 1.1 );
+  // if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -0.8, 0.8 );
   if (Use["BDTD"])          histBdtD    = new TH1F( "MVA_BDTD",          "MVA_BDTD",          nbin, -0.8, 0.8 );
   if (Use["BDTG"])          histBdtG    = new TH1F( "MVA_BDTG",          "MVA_BDTG",          nbin, -1.0, 1.0 );
   if (Use["RuleFit"])       histRf      = new TH1F( "MVA_RuleFit",       "MVA_RuleFit",       nbin, -2.0, 2.0 );
@@ -231,11 +222,11 @@ void classification_application( TString myMethodList = "" )
   // in this example, there is a toy tree with signal and one with background events
   // we'll later on use only the "signal" events for the test in this example.
   //
-  TFile *input(0);
-  // TString fname = "./data.root";
-  TString fname = "./root_export_0nu_25G.root";
+TFile *input(0);
 
-  input = TFile::Open( fname ); // check if file in local directory exists
+TString fname = "./root_export_bi214_25G.root";
+
+input = TFile::Open( fname ); // check if file in local directory exists
 
   if (!input) {
     std::cout << "ERROR: could not open data file" << std::endl;
@@ -247,11 +238,6 @@ void classification_application( TString myMethodList = "" )
   std::cout << "--- Select signal sample" << std::endl;
   TTree* theTree = (TTree*)input->Get("snemodata");
 
-  // Float_t br_2e_electron_minimal_energy = 1;
-  // Float_t br_2e_electron_maximal_energy = 1;
-  // Float_t br_2e_electrons_energy_difference = 1;
-  // Float_t br_2e_electrons_energy_sum = 1;
-
   Double_t br_2e_electron_minimal_energy = 1;
   Double_t br_2e_electron_maximal_energy = 1;
   Double_t br_2e_electrons_energy_difference = 1;
@@ -262,11 +248,6 @@ void classification_application( TString myMethodList = "" )
   Double_t br_2e_electrons_cos_angle = 1;
   Double_t br_2e_electron_Emin_track_length = 1;
   Double_t br_2e_electron_Emax_track_length = 1;
-
-  // theTree->SetBranchAddress( "2e_electron_minimal_energy", &electron_minimal_energy);
-  // theTree->SetBranchAddress( "2e_electron_maximal_energy", &electron_maximal_energy);
-  // theTree->SetBranchAddress( "2e_electrons_energy_difference", &electrons_energy_difference);
-  // theTree->SetBranchAddress( "2e_electrons_energy_sum", &electrons_energy_sum);
 
   theTree->SetBranchAddress( "2e_electron_minimal_energy", &br_2e_electron_minimal_energy);
   theTree->SetBranchAddress( "2e_electron_maximal_energy", &br_2e_electron_maximal_energy);
@@ -288,19 +269,12 @@ void classification_application( TString myMethodList = "" )
   std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
   TStopwatch sw;
   sw.Start();
-  for (Long64_t ievt=0; ievt<5000;ievt++) {
-  // for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
+
+for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
     if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 
     theTree->GetEntry(ievt);
-
-    // std::cout << "--------" << std::endl;
-    // // std::cout << electron_minimal_energy << std::endl;
-    // // std::cout << electron_maximal_energy << std::endl;
-    // // std::cout << "--" << std::endl;
-    // std::cout << br_2e_electron_minimal_energy << std::endl;
-    // std::cout << br_2e_electron_maximal_energy << std::endl;
 
     electron_minimal_energy = (Float_t) br_2e_electron_minimal_energy;
     electron_maximal_energy = (Float_t) br_2e_electron_minimal_energy;
@@ -318,7 +292,6 @@ void classification_application( TString myMethodList = "" )
       Bool_t passed = reader->EvaluateMVA( "CutsGA method", effS );
       if (passed) nSelCutsGA++;
     }
-    // std::cout << "debug 0" << std::endl;
 
     if (Use["Likelihood"   ])   histLk     ->Fill( reader->EvaluateMVA( "Likelihood method"    ) );
     if (Use["LikelihoodD"  ])   histLkD    ->Fill( reader->EvaluateMVA( "LikelihoodD method"   ) );
@@ -351,8 +324,6 @@ void classification_application( TString myMethodList = "" )
     if (Use["Category"     ])   histCat    ->Fill( reader->EvaluateMVA( "Category method"      ) );
     if (Use["Plugin"       ])   histPBdt   ->Fill( reader->EvaluateMVA( "P_BDT method"         ) );
 
-    // std::cout << "debug 1" << std::endl;
-
     // Retrieve also per-event error
     if (Use["PDEFoam"]) {
       Double_t val = reader->EvaluateMVA( "PDEFoam method" );
@@ -361,7 +332,6 @@ void classification_application( TString myMethodList = "" )
       histPDEFoamErr->Fill( err );
       if (err>1.e-50) histPDEFoamSig->Fill( val/err );
     }
-    // std::cout << "debug 2" << std::endl;
 
     // Retrieve probability instead of MVA output
     if (Use["Fisher"])   {
@@ -404,8 +374,9 @@ void classification_application( TString myMethodList = "" )
 
   // --- Write histograms
 
-  TFile *target  = new TFile( "TMVA_application.root","RECREATE" );
-  if (Use["Likelihood"   ])   histLk     ->Write();
+TFile *target = new TFile ("bdt_score_bi214_merge_4.root","RECREATE");
+
+if (Use["Likelihood"   ])   histLk     ->Write();
   if (Use["LikelihoodD"  ])   histLkD    ->Write();
   if (Use["LikelihoodPCA"])   histLkPCA  ->Write();
   if (Use["LikelihoodKDE"])   histLkKDE  ->Write();

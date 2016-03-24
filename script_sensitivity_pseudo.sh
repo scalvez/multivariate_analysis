@@ -4,8 +4,9 @@
 # halflife_roi_file=./halflives_roi_pseudo.txt
 halflife_file=./halflives_pseudo.txt
 (
+    rm $halflife_file
     count=0
-    for pseudo in $(ls -rt ./pseudo_tree/merged/pseudo_1*)
+    for pseudo in $(ls -rt ./pseudo_tree/merged/pseudo_1*.root)
     do
         echo $pseudo
         bdt_score_file="bdt_score_$count.root"

@@ -118,39 +118,63 @@ void classification_simple( TString myMethodList = "" )
    TString outfileName( "TMVA.root" );
    TFile* outputFile = TFile::Open( outfileName, "RECREATE" );
 
-   // TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
-   //                                             "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;G,D:AnalysisType=Classification" );
    TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
-                                               "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification" );
+                                               "!V:!Silent:Color:DrawProgressBar:Transformations=I;D;G,D:AnalysisType=Classification" );
+   // TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
+   //                                             "!V:!Silent:Color:DrawProgressBar:Transformations=I;D:AnalysisType=Classification" );
+   // TMVA::Factory *factory = new TMVA::Factory( "classification", outputFile,
+   //                                             "!V:!Silent:Color:DrawProgressBar:Transformations=I:AnalysisType=Classification" );
 
-   // factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
-   // factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
-   // factory->AddVariable( "2e_electrons_energy_difference", "Electrons energy difference", "MeV", 'F' );
+   factory->AddVariable( "2e_electron_minimal_energy", "Electron minimal energy", "MeV", 'F' );
+   factory->AddVariable( "2e_electron_maximal_energy", "Electron maximal energy", "MeV", 'F' );
+   factory->AddVariable( "2e_electrons_energy_difference", "Electrons energy difference", "MeV", 'F' );
+
    factory->AddVariable( "2e_electrons_energy_sum", "Electrons energy sum", "MeV", 'F' );
 
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
    // TString fname_signal = "./root_export_0nu_small.root";
+   // TString fname_signal = "./root_export_0nu_25G.root";
+   // TString fname_background_2nu = "./root_export_2nu_25G.root";
    TString fname_signal = "./root_export_0nu_25G.root";
    TString fname_background_2nu = "./root_export_2nu_25G.root";
 
+   // TString fname_background_tl208 = "./root_export_tl208_25G.root";
+   // TString fname_background_bi214 = "./root_export_bi214_25G.root";
+   // TString fname_background_radon = "./root_export_radon_25G.root";
+
    TFile *input_signal = TFile::Open( fname_signal );
    TFile *input_background_2nu = TFile::Open( fname_background_2nu );
-   (TMVA::gConfig().GetVariablePlotting()).fNbins1D = 100.0;
+
+   // TFile *input_background_tl208 = TFile::Open( fname_background_tl208 );
+   // TFile *input_background_bi214 = TFile::Open( fname_background_bi214 );
+   // TFile *input_background_radon = TFile::Open( fname_background_radon );
+
+
+   (TMVA::gConfig().GetVariablePlotting()).fNbins1D = 200.0;
    std::cout << "--- Classification       : Using input file(s): " << input_signal->GetName() << std::endl << input_background_2nu->GetName() << "and others..." << std::endl;
 
    // --- Register the training and test trees
 
-   TTree *signal = (TTree*)input_signal->Get("snemodata;1");
-   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;1");
+   TTree *signal = (TTree*)input_signal->Get("snemodata");
+   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;3");
+
+   // TTree *background_tl208 = (TTree*)input_background_tl208->Get("snemodata;1");
+   // TTree *background_bi214 = (TTree*)input_background_bi214->Get("snemodata;1");
+   // TTree *background_radon = (TTree*)input_background_radon->Get("snemodata;1");
 
    // global event weights per tree (see below for setting event-wise weights)
-   Double_t signalWeight     = 0.00001;
+   // Double_t signalWeight     = 0.0000000000001;
+   Double_t signalWeight     = 10000000000;
    Double_t backgroundWeight = 1.0;
 
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
    factory->AddBackgroundTree( background_2nu, backgroundWeight );
+
+   // factory->AddBackgroundTree( background_tl208, backgroundWeight );
+   // factory->AddBackgroundTree( background_bi214, backgroundWeight );
+   // factory->AddBackgroundTree( background_radon, backgroundWeight );
 
    // factory->SetBackgroundWeightExpression( 1 );
 
@@ -307,16 +331,38 @@ void classification_simple( TString myMethodList = "" )
    // // BDT gradient
    // if (Use["BDT"]) // Gradient Boost
    //    factory->BookMethod( TMVA::Types::kBDT, "BDT",
-   //                         "!H:!V:NTrees=10:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=1" );
+   //                         "!H:!V:NTrees=1:MinNodeSize=0.0000000000000000000000001%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=1000:MaxDepth=1" );
 
-   if (Use["BDT"])  // Adaptive Boost
-     factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                          "!H:!V:NTrees=100:MinNodeSize=0.000001%:MaxDepth=1:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=1000");
-
-   //YesNoLeaf
+   // // Standard
    // if (Use["BDT"])  // Adaptive Boost
    //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
-   //                        "!H:!V:NTrees=1:MinNodeSize=0.00001%:MaxDepth=1:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:UseYesNoLeaf:SeparationType=SDivSqrtSPlusB:nCuts=1000");
+   //                        "!H:!V:NTrees=10:MinNodeSize=0.0000000000000000000000000001%:MaxDepth=2:BoostType=AdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:SeparationType=SDivSqrtSPlusB:nCuts=1000");
+
+   //    // Standard no bagging
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=0.0000000000000000000000000001%:SeparationType=GiniIndex:nCuts=100:NodePurityLimit=0.999");
+
+   // Standard no bagging, good conf
+   if (Use["BDT"])  // Adaptive Boost
+     factory->BookMethod( TMVA::Types::kBDT, "BDT",
+                          "!H:!V:NTrees=800:MinNodeSize=0.00000000000000000000000001%:SeparationType=SDivSqrtSPlusB:nCuts=100");
+
+   // // Standard no bagging, good conf : to keep (removed max depth, adaboos beta ?, gini index) (with big weight for signal)
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=0.0000000000000000000000000001%:SeparationType=GiniIndex:nCuts=100:VarTransform=Decorrelate");
+
+   // // Standard no bagging, also good conf : also removed boosting (removed max depth, adaboos beta ?, gini index)
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=0.0000000000000000000000000001%:SeparationType=GiniIndex:nCuts=100");
+
+
+   // //YesNoLeaf
+   // if (Use["BDT"])  // RealAda Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=1:MinNodeSize=0.00000000001%:MaxDepth=1:BoostType=RealAdaBoost:AdaBoostBeta=0.5:UseBaggedBoost:BaggedSampleFraction=0.5:!UseYesNoLeaf:SeparationType=SDivSqrtSPlusB:nCuts=1000");
 
    // conf A
    // if (Use["BDT"])  // Adaptive Boost

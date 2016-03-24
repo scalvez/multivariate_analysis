@@ -50,8 +50,10 @@ namespace conf_sens {
 
   const double k_sens = log(2) * 6.022e23  * isotope_mass * 1000 * exposure / isotope_mass_number;
 
-  const double eff_0nu_bdt_window = 0.1366;
-  const double eff_0nu_roi_window = 0.1502;
+  // const double eff_0nu_bdt_window = 0.1366;
+  // const double eff_0nu_roi_window = 0.1502;
+  const double eff_0nu_bdt_window = 0.2427*0.9468;
+  const double eff_0nu_roi_window = 0.2427*0.654291;
 }
 
 #endif

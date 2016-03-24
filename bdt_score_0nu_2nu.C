@@ -25,8 +25,8 @@ void bdt_score_0nu_2nu()
   TFile * f_0nu = TFile::Open("bdt_score_0nu.root");
   TFile * f_2nu = TFile::Open("bdt_score_2nu.root");
 
-  TH1F *h_0nu_bdt = (TH1F*)f_0nu->Get("MVA_BDTG");
-  TH1F *h_2nu_bdt = (TH1F*)f_2nu->Get("MVA_BDTG");
+  TH1F *h_0nu_bdt = (TH1F*)f_0nu->Get("MVA_BDT");
+  TH1F *h_2nu_bdt = (TH1F*)f_2nu->Get("MVA_BDT");
 
   TFile *f_output= new TFile("bdt_scores_0nu_2nu.root","RECREATE");
 

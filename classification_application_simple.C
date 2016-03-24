@@ -128,15 +128,15 @@ void classification_application_simple( TString myMethodList = "" )
   // Create a set of variables and declare them to the reader
   // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
 
-  // Float_t electron_minimal_energy = 0;
-  // Float_t electron_maximal_energy = 0;
-  // Float_t electrons_energy_difference = 0;
+  Float_t electron_minimal_energy = 0;
+  Float_t electron_maximal_energy = 0;
+  Float_t electrons_energy_difference = 0;
 
   Float_t electrons_energy_sum = 0;
 
-  // reader->AddVariable( "2e_electron_minimal_energy", & electron_minimal_energy );
-  // reader->AddVariable( "2e_electron_maximal_energy", & electron_maximal_energy );
-  // reader->AddVariable( "2e_electrons_energy_difference", &electrons_energy_difference );
+  reader->AddVariable( "2e_electron_minimal_energy", & electron_minimal_energy );
+  reader->AddVariable( "2e_electron_maximal_energy", & electron_maximal_energy );
+  reader->AddVariable( "2e_electrons_energy_difference", &electrons_energy_difference );
 
   reader->AddVariable( "2e_electrons_energy_sum", &electrons_energy_sum );
   // --- Book the MVA methods
@@ -154,7 +154,7 @@ void classification_application_simple( TString myMethodList = "" )
   }
 
   // Book output histograms
-  UInt_t nbin = 400;
+  UInt_t nbin = 100;
   TH1F   *histLk(0), *histLkD(0), *histLkPCA(0), *histLkKDE(0), *histLkMIX(0), *histPD(0), *histPDD(0);
   TH1F   *histPDPCA(0), *histPDEFoam(0), *histPDEFoamErr(0), *histPDEFoamSig(0), *histKNN(0), *histHm(0);
   TH1F   *histFi(0), *histFiG(0), *histFiB(0), *histLD(0), *histNn(0),*histNnbfgs(0),*histNnbnn(0);
@@ -180,7 +180,7 @@ void classification_application_simple( TString myMethodList = "" )
   if (Use["MLPBNN"])        histNnbnn   = new TH1F( "MVA_MLPBNN",        "MVA_MLPBNN",        nbin, -1.25, 1.5 );
   if (Use["CFMlpANN"])      histNnC     = new TH1F( "MVA_CFMlpANN",      "MVA_CFMlpANN",      nbin,  0, 1 );
   if (Use["TMlpANN"])       histNnT     = new TH1F( "MVA_TMlpANN",       "MVA_TMlpANN",       nbin, -1.3, 1.3 );
-  if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -1.0, 1.0 );
+  if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -1.1, 1.1 );
   // if (Use["BDT"])           histBdt     = new TH1F( "MVA_BDT",           "MVA_BDT",           nbin, -0.8, 0.8 );
   if (Use["BDTD"])          histBdtD    = new TH1F( "MVA_BDTD",          "MVA_BDTD",          nbin, -0.8, 0.8 );
   if (Use["BDTG"])          histBdtG    = new TH1F( "MVA_BDTG",          "MVA_BDTG",          nbin, -1.0, 1.0 );
@@ -227,15 +227,15 @@ input = TFile::Open( fname ); // check if file in local directory exists
   std::cout << "--- Select signal sample" << std::endl;
   TTree* theTree = (TTree*)input->Get("snemodata");
 
-  // Double_t br_2e_electron_minimal_energy = 1;
-  // Double_t br_2e_electron_maximal_energy = 1;
-  // Double_t br_2e_electrons_energy_difference = 1;
+  Double_t br_2e_electron_minimal_energy = 1;
+  Double_t br_2e_electron_maximal_energy = 1;
+  Double_t br_2e_electrons_energy_difference = 1;
 
   Double_t br_2e_electrons_energy_sum = 1;
 
-  // theTree->SetBranchAddress( "2e_electron_minimal_energy", &br_2e_electron_minimal_energy);
-  // theTree->SetBranchAddress( "2e_electron_maximal_energy", &br_2e_electron_maximal_energy);
-  // theTree->SetBranchAddress( "2e_electrons_energy_difference", &br_2e_electrons_energy_difference);
+  theTree->SetBranchAddress( "2e_electron_minimal_energy", &br_2e_electron_minimal_energy);
+  theTree->SetBranchAddress( "2e_electron_maximal_energy", &br_2e_electron_maximal_energy);
+  theTree->SetBranchAddress( "2e_electrons_energy_difference", &br_2e_electrons_energy_difference);
 
   theTree->SetBranchAddress( "2e_electrons_energy_sum", &br_2e_electrons_energy_sum);
 
@@ -249,15 +249,14 @@ input = TFile::Open( fname ); // check if file in local directory exists
   TStopwatch sw;
   sw.Start();
 
-for (Long64_t ievt=0; ievt<10000;ievt++) {
+for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
     if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 
     theTree->GetEntry(ievt);
-
-    // electron_minimal_energy = (Float_t) br_2e_electron_minimal_energy;
-    // electron_maximal_energy = (Float_t) br_2e_electron_minimal_energy;
-    // electrons_energy_difference = (Float_t) br_2e_electrons_energy_difference;
+    electron_minimal_energy = (Float_t) br_2e_electron_minimal_energy;
+    electron_maximal_energy = (Float_t) br_2e_electron_minimal_energy;
+    electrons_energy_difference = (Float_t) br_2e_electrons_energy_difference;
 
     electrons_energy_sum = (Float_t) br_2e_electrons_energy_sum;
 
@@ -348,7 +347,7 @@ for (Long64_t ievt=0; ievt<10000;ievt++) {
 
   // --- Write histograms
 
-TFile *target = new TFile ("bdt_score_2nu.root","RECREATE");
+TFile *target = new TFile ("bdt_score_2nu_merge_19.root","RECREATE");
 
 if (Use["Likelihood"   ])   histLk     ->Write();
   if (Use["LikelihoodD"  ])   histLkD    ->Write();

@@ -54,7 +54,7 @@ void spectra_2e()
   tree_2nu->SetBranchAddress("2e_electrons_energy_sum",&electrons_energy_sum_2nu);
   int nentries_2nu = tree_2nu->GetEntriesFast();
   // for(int i = 0; i< nentries_2nu; ++i) {
-  for(int i = 0; i< 20000; ++i) {
+  for(int i = 0; i< 100000; ++i) {
     tree_2nu->GetEntry(i);
     // std::cout << electrons_energy_sum_2nu << std::endl;
     h_2nu->Fill(electrons_energy_sum_2nu);

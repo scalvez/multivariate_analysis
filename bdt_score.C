@@ -77,7 +77,7 @@ void bdt_score()
   h_radon_bdt->SetName("radon");
   // h_radon->Rebin();
 
-  Double_t xl1=.7, yl1=0.775, xl2=0.9, yl2=0.9;
+  Double_t xl1=.75, yl1=0.7, xl2=0.9, yl2=0.9;
   TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
   leg->AddEntry(h_0nu_bdt,"0#nu");
   leg->AddEntry(h_2nu_bdt,"2#nu");
@@ -99,17 +99,21 @@ void bdt_score()
   h_bi214_bdt->Write();
   h_radon_bdt->Write();
 
-  THStack *hs = new THStack("hs","Stacked BDT scores");
+  THStack *hs = new THStack("hs","BDT scores");
   hs->Add(h_2nu_bdt);
   hs->Add(h_tl208_bdt);
   hs->Add(h_bi214_bdt);
   hs->Add(h_radon_bdt);
   hs->Add(h_0nu_bdt);
 
+  hs->SetTitle("BDT;BDT score;Probability");
+  hs->Write();
+
+  TCanvas * c1 = new TCanvas();
+  c1->cd();
   hs->Draw();
   leg->Draw("same");
-
-  hs->Write();
+  c1->Write();
 
   // gStyle->SetTitleFontSize(0.08);
   // gPad->SetLogy();
