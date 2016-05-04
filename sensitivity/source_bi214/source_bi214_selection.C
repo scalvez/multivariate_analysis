@@ -26,8 +26,8 @@ void source_bi214_selection()
 {
 
   // TFile * f_bi214 = TFile::Open("$SW_WORK_DIR/multivariate_analysis/data/.root");
-  // TFile * f_bi214 = TFile::Open("root_export.root");
-  TFile * f_bi214 = TFile::Open("pseudo.root");
+  TFile * f_bi214 = TFile::Open("bi214_tree.root");
+  // TFile * f_bi214 = TFile::Open("pseudo.root");
 
   TTree *tree_bi214 = (TTree*)f_bi214->Get("snemodata");
 
@@ -38,10 +38,11 @@ void source_bi214_selection()
   // tree_bi214->Draw("1e_electron_energy",cut_electron_energy + cut_electron_angle);
   TH1F* h = new TH1F("h","h",100,0,500);
 
-  // tree_bi214->Project("h","1e_electron_energy",cut_electron_energy);
-  tree_bi214->Project("h","1e1a_alpha_track_length","","",242);
+   // tree_bi214->Project("h","1e_electron_energy",cut_electron_energy);
+  // tree_bi214->Project("h","1e1a_alpha_track_length");
+  tree_bi214->Project("h","1e1a_alpha_track_length","","",1000);
 
-  TFile *f_output= new TFile("test.root","RECREATE");
+  TFile *f_output= new TFile("pseudo.root","RECREATE");
 
   // std::cout << h->Integral(0,100) << std::endl;
 
