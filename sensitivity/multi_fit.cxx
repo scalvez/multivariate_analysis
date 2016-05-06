@@ -41,10 +41,11 @@ void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag
       double b = (par[0]*bi214_pdf->GetBinContent(i)*bi214_channel_1e1g_efficiency
                   +par[1]*tl208_pdf->GetBinContent(i)*tl208_channel_1e1g_efficiency)*7*3.14e7*2.5;
       double d = pseudo->GetBinContent(i);
-      // if(b=0)
-      //    b=1e-6;
+
+      if(b==0)
+        b=1e-6;
       // std::cout << "i b d " << i << "  " << b << "  " << d << std::endl;
-      f += 2*(b-d*log(b+0.000001)+log_factorial(d));
+      f += 2*(b-d*log(b)+log_factorial(d));
     }
 
   f_bi214->Close();
@@ -160,47 +161,47 @@ void multi_fit()
   hs->Add(bi214_pdf);
   hs->Add(tl208_pdf);
 
-  // TCanvas *c1 = new TCanvas("c1","example",600,700);
+  TCanvas *c1 = new TCanvas("c1","example",600,700);
 
-  // TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
-  // // pad1->SetBottomMargin(0.05);
-  // pad1->SetTopMargin(0.03);
-  // pad1->Draw();
-  // pad1->cd();
+  TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
+  // pad1->SetBottomMargin(0.05);
+  pad1->SetTopMargin(0.03);
+  pad1->Draw();
+  pad1->cd();
 
-  // hs->DrawClone();
+  hs->DrawClone();
 
-  // pseudo->DrawClone("samePE");
-  // c1->cd();
+  pseudo->DrawClone("samePE");
+  c1->cd();
 
-  // // TH1 *h_sum = new TH1F("h_sum","h_sum");
+  // TH1 *h_sum = new TH1F("h_sum","h_sum");
 
+  bi214_pdf->Sumw2();
+  bi214_pdf->Add(tl208_pdf);
+  //Error computation to check
   // bi214_pdf->Sumw2();
-  // bi214_pdf->Add(tl208_pdf);
-  // //Error computation to check
-  // // bi214_pdf->Sumw2();
-  // pseudo->Sumw2();
+  pseudo->Sumw2();
 
-  // TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
-  // pad2->SetTopMargin(0.0);
-  // // pad2->SetBottomMargin(0.05);
-  // pad2->Draw();
-  // pad2->cd();
+  TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
+  pad2->SetTopMargin(0.0);
+  // pad2->SetBottomMargin(0.05);
+  pad2->Draw();
+  pad2->cd();
 
-  // bi214_pdf->SetStats(0);
-  // pseudo->SetStats(0);
+  bi214_pdf->SetStats(0);
+  pseudo->SetStats(0);
 
-  // pseudo->Divide(bi214_pdf);
+  pseudo->Divide(bi214_pdf);
 
-  // pseudo->GetYaxis()->SetRangeUser(0.6,1.4);
-  // pseudo->Draw("ep");
+  pseudo->GetYaxis()->SetRangeUser(0.6,1.4);
+  pseudo->Draw("ep");
 
-  // TLine *line = new TLine(0,1,5,1);
-  // // line->SetLineColor(kBlack);
-  // line->SetLineStyle(kDashed);
-  // line->Draw("same");
+  TLine *line = new TLine(0,1,5,1);
+  // line->SetLineColor(kBlack);
+  line->SetLineStyle(kDashed);
+  line->Draw("same");
 
-  // c1->cd();
+  c1->cd();
 
   return;
 }
