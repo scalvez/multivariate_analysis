@@ -22,37 +22,27 @@
 #include <math.h>
 #include <stdlib.h>
 
-void source_bi214_selection()
+// void channel_selection(TString input_file, TString channel, TString output_file, bool normalize = true)
+void channel_selection()
 {
+  // TFile *f = TFile::Open(input_file);
+  TFile *f = TFile::Open("bi214_tree.root");
+  TTree *tree = (TTree*)f->Get("snemodata");
 
-  // TFile * f_bi214 = TFile::Open("$SW_WORK_DIR/multivariate_analysis/data/.root");
-  // TFile * f_bi214 = TFile::Open("bi214_tree.root");
-  // TFile * f_bi214 = TFile::Open("pseudo.root");
-  TFile * f_tl208 = TFile::Open("tl208_tree.root");
+  TCut cut = get_channel_cut(channel);
+  // TCut cut_electron_energy = "1e_electron_energy > 1";
 
-  // TTree *tree_bi214 = (TTree*)f_bi214->Get("snemodata");
-  TTree *tree_tl208 = (TTree*)f_tl208->Get("snemodata");
-
-  TCut cut_electron_energy = "1e_electron_energy > 1";
-  // // TCut cut_electron_angle = "1e_electron_angle > 1.5";
-  TCut cut_electron_angle = "2e_electrons_angle > 1.5";
-
-  // tree_bi214->Draw("1e_electron_energy",cut_electron_energy + cut_electron_angle);
   TH1F* h = new TH1F("h","h",100,0,5);
 
-  // tree_bi214->Project("h","1e_electron_energy",cut_electron_energy);
-  // tree_bi214->Project("h","1e1a_alpha_track_length");
-  // tree_bi214->Project("h","1e1a_alpha_track_length","","",1000);
-  // tree_bi214->Project("h","1e1g_electron_gamma_energy_sum");
-  // tree_bi214->Project("h","1e1g_electron_gamma_energy_sum","","",6760);
-  // tree_tl208->Project("h","1e1g_electron_gamma_energy_sum");
-  tree_tl208->Project("h","1e1g_electron_gamma_energy_sum","","",1535);
+  std::string cut = sprintf("1e1g_electron_gamma_energy_sum");
 
-  TFile *f_output= new TFile("pseudo_tl208.root","RECREATE");
+  tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
 
-  // std::cout << h->Integral(0,100) << std::endl;
+  TFile *f_output= new TFile("tmp.root","RECREATE");
 
-  // h->Scale(1./h->Integral(0,100));
+  if(normalize)
+    h->Scale(1./h->Integral(1,h->GetNbins()));
+
   h->Write();
   return;
 }
