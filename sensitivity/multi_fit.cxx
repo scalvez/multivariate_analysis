@@ -94,20 +94,20 @@ void multi_fit()
   double maxVal[npar];            // maximum bound on parameter
   string parName[npar];           // parameter name
 
-  par[0]= 100./1e6;
-  stepSize[0] = 0.00001;
-  minVal[0] = 0.00001;
-  maxVal[0] = 0.001;
+  par[0]= 10./1e6;
+  stepSize[0] = 1e-6;
+  minVal[0] = 1e-9;
+  maxVal[0] = 1e-3;
   // parName[0] = "activity in uBq/kg";
   parName[0] = "activity bi214";
 
   minuit.DefineParameter(0, parName[0].c_str(),
                          par[0], stepSize[0], minVal[0], maxVal[0]);
 
-  par[1]= 20./1e6;
-  stepSize[1] = 0.00001;
-  minVal[1] = 0.00001;
-  maxVal[1] = 0.001;
+  par[1]= 2./1e6;
+  stepSize[1] = 1e-6;
+  minVal[1] = 1e-9;
+  maxVal[1] = 1e-3;
   // parName[1] = "activity in uBq/kg";
   parName[1] = "activity tl208";
 
