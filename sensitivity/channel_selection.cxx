@@ -22,26 +22,24 @@
 #include <math.h>
 #include <stdlib.h>
 
-// void channel_selection(TString input_file, TString channel, TString output_file, bool normalize = true)
-void channel_selection()
+void channel_selection(TString input_file, TString channel="", TString output_file="channel_selection_output.root", bool normalize = true)
 {
-  // TFile *f = TFile::Open(input_file);
-  TFile *f = TFile::Open("bi214_tree.root");
+  TFile *f = TFile::Open(input_file);
+
   TTree *tree = (TTree*)f->Get("snemodata");
 
-  TCut cut = get_channel_cut(channel);
+  // TCut cut = get_channel_cut(channel);
   // TCut cut_electron_energy = "1e_electron_energy > 1";
 
   TH1F* h = new TH1F("h","h",100,0,5);
 
-  std::string cut = sprintf("1e1g_electron_gamma_energy_sum");
+  // tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
+  tree->Project("h","1e1g_electron_gamma_energy_sum");
 
-  tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
-
-  TFile *f_output= new TFile("tmp.root","RECREATE");
+  TFile *f_output= new TFile(output_file,"RECREATE");
 
   if(normalize)
-    h->Scale(1./h->Integral(1,h->GetNbins()));
+    h->Scale(1./h->Integral(1,h->GetXaxis()->GetNbins()));
 
   h->Write();
   return;

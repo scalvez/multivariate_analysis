@@ -22,6 +22,8 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "sensitivity_constants.h"
+
 // void pseudo_generator(TString pdf_file= "", TString distribution = "") {
 void pseudo_generator() {
 
@@ -38,13 +40,16 @@ void pseudo_generator() {
   // h_cdf->Draw();
   // h->Draw("same");
 
-  int n_events = 10000;
+  double activity = 100e-6;
+  int n_events = int(activity*bi214_channel_1e1g_efficiency*exposure*mass);
+  // int n_events = 10000;
   int nbins = h_cdf->GetNbinsX();
 
-  TH1F *h_pseudo = new TH1F("pseudo","pseudo",nbins,h->GetXaxis()->GetBinLowEdge(1),h->GetXaxis()->GetBinUpEdge(100));
+  TH1F *h_pseudo = new TH1F("pseudo","pseudo",nbins,h->GetXaxis()->GetBinLowEdge(1),h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()));
+
+  std::cout << "Simulating pseudo-experiment with " << n_events << std::endl;
 
   for(unsigned int i=0; i<n_events;++i) {
-
     double rdm = gRandom->Uniform(1);
     for(unsigned int j=1; j<=nbins;++j) {
       if(h_cdf->GetBinContent(j)>rdm) {
@@ -53,9 +58,14 @@ void pseudo_generator() {
       }
     }
   }
+
   h->Scale(n_events);
   h->Draw();
   h_pseudo->SetLineColor(kRed);
   h_pseudo->Draw("sameEP");
+
+  TFile *f_output= new TFile("pseudo.root","RECREATE");
+  h_pseudo->Write();
+
   return;
 }
