@@ -27,13 +27,13 @@ void bdt_score()
   TFile * f_2nu = TFile::Open("bdt_score_2nu.root");
   TFile * f_tl208 = TFile::Open("bdt_score_tl208.root");
   TFile * f_bi214 = TFile::Open("bdt_score_bi214.root");
-  TFile * f_radon = TFile::Open("bdt_score_radon.root");
+  // TFile * f_radon = TFile::Open("bdt_score_radon.root");
 
   TH1F *h_0nu_bdt = (TH1F*)f_0nu->Get("MVA_BDT");
   TH1F *h_2nu_bdt = (TH1F*)f_2nu->Get("MVA_BDT");
   TH1F *h_tl208_bdt = (TH1F*)f_tl208->Get("MVA_BDT");
   TH1F *h_bi214_bdt = (TH1F*)f_bi214->Get("MVA_BDT");
-  TH1F *h_radon_bdt = (TH1F*)f_radon->Get("MVA_BDT");
+  // TH1F *h_radon_bdt = (TH1F*)f_radon->Get("MVA_BDT");
 
   TFile *f_output= new TFile("bdt_scores.root","RECREATE");
 
@@ -69,13 +69,13 @@ void bdt_score()
   h_bi214_bdt->SetName("bi214");
   // h_bi214->Rebin();
 
-  h_radon_bdt->Scale(1./h_radon_bdt->GetEntries());
-  h_radon_bdt->SetLineColor(kMagenta);
-  h_radon_bdt->SetLineWidth(2);
-  h_radon_bdt->SetFillColor(kMagenta);
-  h_radon_bdt->SetTitle("Radon;BDT score; Probability");
-  h_radon_bdt->SetName("radon");
-  // h_radon->Rebin();
+  // h_radon_bdt->Scale(1./h_radon_bdt->GetEntries());
+  // h_radon_bdt->SetLineColor(kMagenta);
+  // h_radon_bdt->SetLineWidth(2);
+  // h_radon_bdt->SetFillColor(kMagenta);
+  // h_radon_bdt->SetTitle("Radon;BDT score; Probability");
+  // h_radon_bdt->SetName("radon");
+  // // h_radon->Rebin();
 
   Double_t xl1=.75, yl1=0.7, xl2=0.9, yl2=0.9;
   TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
