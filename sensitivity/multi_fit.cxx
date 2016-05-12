@@ -52,7 +52,6 @@ void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag
   f_tl208->Close();
   f_pseudo->Close();
   return;
-
 }
 
 // double likelihood(double activity)

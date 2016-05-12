@@ -17,3 +17,5 @@ const double vertices_probability_max = 0;
 TCut prob_int_cut = "2e_electrons_internal_probability > 0.04";
 TCut vertices_proba_cut = "2e_electrons_vertices_probability > 0.04";
 TCut channel_2e_int_cut = prob_int_cut&&vertices_proba_cut;
+
+// void get_histogram_options(TString quantity, int & nbins, double & xmin, double & xmax);

@@ -25,9 +25,9 @@
 #include "sensitivity_constants.h"
 
 // void pseudo_generator(TString pdf_file= "", TString distribution = "") {
-void pseudo_generator() {
+void pseudo_generator(TString pdf_file, double activity) {
 
-  TString pdf_file = "bi214_pdf.root";
+  // TString pdf_file = "bi214_pdf.root";
   TString distribution = "h";
   // pdf_file="";
   TFile * f = TFile::Open(pdf_file);
@@ -40,7 +40,7 @@ void pseudo_generator() {
   // h_cdf->Draw();
   // h->Draw("same");
 
-  double activity = 100e-6;
+  // double activity = 100e-6;
   int n_events = int(activity*bi214_channel_1e1g_efficiency*exposure*mass);
   // int n_events = 10000;
   int nbins = h_cdf->GetNbinsX();
