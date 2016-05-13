@@ -15,22 +15,22 @@ int main() {
   for (auto i = isotopes.begin(); i != isotopes.end(); ++i) {
     const std::string & a_isotope = *i;
 
-    isotope_mc_files.push_back(a_isotope + "_tree.root");
+    isotope_mc_files.push_back("../" + a_isotope + "_tree.root");
   // for(unsigned int i = 0; i < quantities_pdf.size(); ++i)
   //   quantity_efficiency[i];
-    isotope_pdf_files.push_back(a_isotope + "_pdf.root");
-    channel_selection(isotope_mc_files, isotope_pdf_files, quantities_pdf, isotope_quantity_efficiency);
+    isotope_pdf_files.push_back("../" + a_isotope + "_pdf.root");
   }
-  std::vector < std::map < TString, double > > isotope_quantity_efficiency;
+
+  channel_selection(isotope_mc_files, isotope_pdf_files, quantities_pdf);
 
   TString pseudo_file = "pseudo.root";
 
-  std::cout << "vector size is " << isotope_quantity_efficiency.size() << std::endl;
-  std::map < TString, double > test = isotope_quantity_efficiency.at(0);
-  std::cout << "map size is " << test.size() << std::endl;
+  // std::cout << "vector size is " << isotope_quantity_efficiency.size() << std::endl;
+  // std::map < TString, double > test = isotope_quantity_efficiency.at(0);
+  // std::cout << "map size is " << test.size() << std::endl;
 
-  std::map<TString, double>::iterator iter = test.begin();
-  std::cout << (*iter).first << std::endl;
+  // std::map<TString, double>::iterator iter = test.begin();
+  // std::cout << (*iter).first << std::endl;
 
   // std::vector<TString>::iterator iter = isotope_mc_files.begin();
 
