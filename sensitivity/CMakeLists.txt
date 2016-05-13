@@ -15,7 +15,7 @@ find_package(ROOT 5.34.00 REQUIRED)
 include_directories(${ROOT_INCLUDE_DIRS})
 
 # Build a dynamic library from our sources
-add_library(SensitivityMVA SHARED analysis_config.h channel_selection.h channel_selection.cc)
+add_library(SensitivityMVA SHARED analysis_config.h analysis_config.cc channel_selection.h channel_selection.cc sensitivity_constants.h)
 
 target_link_libraries(SensitivityMVA ${ROOT_LIBRARIES})
 

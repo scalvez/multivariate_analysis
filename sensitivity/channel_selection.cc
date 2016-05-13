@@ -3,96 +3,62 @@
 #include <TH1F.h>
 #include <TFile.h>
 #include <TTree.h>
+#include <TChain.h>
+
 #include "analysis_config.h"
-
 #include "channel_selection.h"
+#include "sensitivity_measurements.h"
 
-void get_histogram_options(TString quantity, int & nbins, double & xmin, double & xmax) {
+void channel_selection(TString isotope, std::vector<TString> quantities_pdf, bool normalize)
+{
+  std::cout << "channel selection " << std::endl;
 
-  // hardcoded for now, see if it is parametrized in the configuration file
-  if(quantity.Contains("energy")) {
+  TString input_file = "../" + isotope + "_tree.root";
+  TString output_file = "../" + isotope + "_pdf.root";
+
+  TFile *f = TFile::Open(input_file);
+  std::cout << "opened file " << input_file << std::endl;
+  f->ls();
+  TChain *tree = (TChain*)f->Get("snemodata;1");
+  tree->ls();
+  std::cout << "got the tree " << std::endl;
+
+  TFile *f_output= new TFile(output_file, "RECREATE");
+
+  double isotope_mc_size = get_isotope_mc_size(input_file);
+  // TCut cut = get_channel_cut(channel);
+  // TCut cut_electron_energy = "1e_electron_energy > 1";
+  for(unsigned int j=0; j<quantities_pdf.size(); ++j) {
+
+    int nbins;
+    double xmin, xmax;
     nbins = 100;
     xmin = 0;
     xmax = 5;
+
+    TString qty = quantities_pdf.at(j);
+
+    get_histogram_options(qty, nbins, xmin, xmax);
+
+    TH1F* h = new TH1F(qty,qty,nbins,xmin,xmax);
+
+    std::cout << "project tree " << std::endl;
+
+    tree->Project(qty,qty);
+
+    // tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
+    // tree->Project("h","1e1g_electron_gamma_energy_sum");
+    TString isotope_quantity = isotope + "_" + qty;
+    quantity_efficiency.insert(std::pair<TString,double>(isotope_quantity,h->Integral(1,h->GetXaxis()->GetNbins())/isotope_mc_size));
+
+    std::cout << "normalizing " << std::endl;
+
+    if(normalize)
+      h->Scale(1./h->Integral(1,h->GetXaxis()->GetNbins()));
+    h->Write();
   }
-  else if(quantity.Contains("probability")){
-    nbins = 100;
-    xmin = 0;
-    xmax = 1;
-  }
-  else if(quantity.Contains("angle")) {
-    nbins = 100;
-    xmin = -1;
-    xmax = 1;
-  }
-  else if (quantity.Contains("track_length")) {
-    nbins = 100;
-    xmin = 0;
-    xmax = 500;
-  }
-  else {
-    //Also maybe the alpha delayed time
-    //for now, dummy values
-    nbins = 100;
-    xmin = 0;
-    xmax = 1000;
-  }
-
-  return;
-}
-
-// TODO: to move in the analysis config and get MC dataset size from conf
-double get_isotope_mc_size(TString isotope) {
-  if(isotope.Contains("tl208")) {
-    return 1e8;
-  }
-  else if(isotope.Contains("bi214")){
-    return 1e8;
-  }
-  else {
-    //tmp dirty
-    return 1;
-  }
-}
-
-void channel_selection( std::vector <TString> input_files, std::vector<TString> output_files, std::vector<TString> quantities_pdf, bool normalize)
-{
-  for (unsigned int i = 0; i < input_files.size(); ++i) {
-    TFile *f = TFile::Open(input_files.at(i));
-
-    TTree *tree = (TTree*)f->Get("snemodata");
-
-      TFile *f_output= new TFile(output_files.at(i),"RECREATE");
-
-      double isotope_mc_size = get_isotope_mc_size(input_files.at(i));
-      // TCut cut = get_channel_cut(channel);
-      // TCut cut_electron_energy = "1e_electron_energy > 1";
-      for(unsigned int j=0; j<quantities_pdf.size(); ++j) {
-
-        int nbins;
-        double xmin, xmax;
-        nbins = 100;
-        xmin = 0;
-        xmax = 5;
-
-        TString qty = quantities_pdf.at(j);
-
-        get_histogram_options(qty, nbins, xmin, xmax);
-
-        TH1F* h = new TH1F(qty,qty,nbins,xmin,xmax);
-
-        tree->Project(qty,qty);
-
-        // tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
-        // tree->Project("h","1e1g_electron_gamma_energy_sum");
-
-        if(normalize)
-          h->Scale(1./h->Integral(1,h->GetXaxis()->GetNbins()));
-        h->Write();
-      }
-      f->Close();
-      f_output->Close();
-    }
+  f->Close();
+  f_output->Close();
 
   return;
 }

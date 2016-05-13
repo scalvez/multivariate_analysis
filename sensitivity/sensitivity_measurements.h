@@ -1,4 +1,4 @@
 #include <map>
 #include <string>
 
-std::map < std::string , double > quantity_efficiency;
+std::map < TString , double > quantity_efficiency;
