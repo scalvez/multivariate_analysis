@@ -204,3 +204,8 @@ void multi_fit()
 
   return;
 }
+
+int main()
+{
+  multi_fit();
+}
