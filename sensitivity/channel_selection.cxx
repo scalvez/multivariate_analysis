@@ -73,10 +73,12 @@ double get_isotope_mc_size(TString isotope) {
   }
 }
 
-void channel_selection(std::vector <TString> input_files, std::vector<TString> output_files, std::vector<TString> quantities_pdf, std::map <TString,double> qty_eff, bool normalize = true)
+void channel_selection(std::vector <TString> input_files, std::vector<TString> output_files, std::vector<TString> quantities_pdf, std::vector < std::map < TString,double > > & isotope_qty_eff, bool normalize = true)
 {
   for(unsigned int i = 0; i < input_files.size(); ++i) {
     TFile *f = TFile::Open(input_files.at(i));
+
+    std::map <TString,double> qty_eff;
 
     TTree *tree = (TTree*)f->Get("snemodata");
 
@@ -104,14 +106,18 @@ void channel_selection(std::vector <TString> input_files, std::vector<TString> o
         // tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
         // tree->Project("h","1e1g_electron_gamma_energy_sum");
 
-        qty_eff.insert (std::pair<TString,double>(qty,h->Integral(1,h->GetXaxis()->GetNbins())/isotope_mc_size));
+        std::cout << qty << "   " <<  h->Integral(1,h->GetXaxis()->GetNbins()) <<  "  " << isotope_mc_size << " = " << double(h->Integral(1,h->GetXaxis()->GetNbins()))/isotope_mc_size <<  std::endl;
+
+        qty_eff.insert (std::pair<TString,double>(qty,double(h->Integral(1,h->GetXaxis()->GetNbins()))/isotope_mc_size));
 
         if(normalize)
           h->Scale(1./h->Integral(1,h->GetXaxis()->GetNbins()));
         h->Write();
       }
+      isotope_qty_eff.push_back(qty_eff);
       f->Close();
       f_output->Close();
     }
+
   return;
 }

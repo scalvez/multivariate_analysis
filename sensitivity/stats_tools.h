@@ -10,7 +10,7 @@ int log_factorial(int n)
     return 0;
 
   double s = 0;
-  for(unsigned int i = 2; i <= n; ++i) {
+  for(int i = 2; i <= n; ++i) {
     s += log(n);
   }
   return s;
