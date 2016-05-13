@@ -27,10 +27,10 @@
 void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag)
 {
   TFile * f_bi214 = TFile::Open("bi214_pdf.root");
-  TH1F *bi214_pdf = (TH1F*)f_bi214->Get("h;1");
+  TH1F *bi214_pdf = (TH1F*)f_bi214->Get("1e1g_electron_gamma_energy_sum");
 
   TFile * f_tl208 = TFile::Open("tl208_pdf.root");
-  TH1F *tl208_pdf = (TH1F*)f_tl208->Get("h;1");
+  TH1F *tl208_pdf = (TH1F*)f_tl208->Get("1e1g_electron_gamma_energy_sum");
 
   TFile * f_pseudo = TFile::Open("pseudo.root");
   TH1F *pseudo = (TH1F*)f_pseudo->Get("pseudo");
@@ -44,7 +44,7 @@ void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag
 
       if(b==0)
         b=1e-6;
-      // std::cout << "i b d " << i << "  " << b << "  " << d << std::endl;
+      std::cout << "i b d " << i << "  " << b << "  " << d << std::endl;
       f += 2*(b-d*log(b)+log_factorial(d));
     }
 
@@ -138,13 +138,13 @@ void multi_fit()
   // g_likelihood->Draw();
 
   TFile * f_bi214 = TFile::Open("bi214_pdf.root");
-  TH1F *bi214_pdf = (TH1F*)f_bi214->Get("h");
+  TH1F *bi214_pdf = (TH1F*)f_bi214->Get("1e1g_electron_gamma_energy_sum");
 
   bi214_pdf->SetLineColor(kOrange);
   bi214_pdf->SetFillColor(kOrange);
 
   TFile * f_tl208 = TFile::Open("tl208_pdf.root");
-  TH1F *tl208_pdf = (TH1F*)f_tl208->Get("h");
+  TH1F *tl208_pdf = (TH1F*)f_tl208->Get("1e1g_electron_gamma_energy_sum");
   tl208_pdf->SetLineColor(kGreen+1);
   tl208_pdf->SetFillColor(kGreen+1);
 
