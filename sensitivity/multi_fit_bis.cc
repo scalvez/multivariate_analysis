@@ -15,8 +15,8 @@
 void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag)
 {
   std::map < std::string, double > isotope_activity;
-  isotope_activity.insert( std::pair<std::string,double>("tl208",100e-6) );
   isotope_activity.insert(std::pair<std::string,double>("bi214",100e-6));
+  isotope_activity.insert( std::pair<std::string,double>("tl208",100e-6) );
 
   std::vector <TString> quantities;
   quantities.push_back("1e1g_electron_gamma_energy_sum");
@@ -34,6 +34,7 @@ void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag
       {
         double b = 0;
         unsigned int count = 0;
+        double efficiency[2] = {0.123019,0.139367};
         for(std::map<std::string, double>::iterator k = isotope_activity.begin(); k != isotope_activity.end(); ++k) {
         // for(auto k = isotope_activity.begin(); k != isotope_activity.end(); ++k) {
           TString qty = *j;
@@ -41,14 +42,13 @@ void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag
           // std::cout << "isotope " << isotope << std::endl;
 
           TString channel = qty + "_" + isotope;
-          double efficiency = 0.13;
           // double efficiency = quantity_efficiency.at(channel);
           TString pdf_file = isotope + "_pdf.root";
           TFile *file = TFile::Open(pdf_file);
 
           TH1F *h = (TH1F*)file->Get(qty);
 
-          b += par[count] * efficiency * h->GetBinContent(i) * mass * exposure;
+          b += par[count] * efficiency[count] * h->GetBinContent(i) * mass * exposure;
           // std::cout << "i activity  efficiency  histo_eff   " << std::endl
           //           << i << "  " << par[count] << "  " << efficiency << "  " << h->GetBinContent(i) << std::endl;
           count++;
@@ -110,20 +110,20 @@ void multi_fit_bis()
   double maxVal[npar];            // maximum bound on parameter
   std::string parName[npar];           // parameter name
 
-   par[0] = 11./1e6;
+   par[0] = 100e-6;
    stepSize[0] = 1e-7;
    minVal[0] = 1e-9;
    maxVal[0] = 1e-3;
-   parName[0] = "activity in 208Tl uBq/kg";
+   parName[0] = "activity in 214Bi uBq/kg";
 
    minuit.DefineParameter(0, parName[0].c_str(),
                             par[0], stepSize[0], minVal[0], maxVal[0]);
 
-   par[1] = 11./1e6;
+   par[1] = 20e-6;
    stepSize[1] = 1e-7;
    minVal[1] = 1e-9;
    maxVal[1] = 1e-3;
-   parName[1] = "activity in 214Bi uBq/kg";
+   parName[1] = "activity in 208Tl uBq/kg";
 
    minuit.DefineParameter(1, parName[1].c_str(),
                             par[1], stepSize[1], minVal[1], maxVal[1]);
@@ -152,15 +152,16 @@ void multi_fit_bis()
   //   count_bis++;
   // }
 
-  double activity_tl208 = 0;
-  double activity_err_tl208 = 0;
-  minuit.GetParameter(0,activity_tl208,activity_err_tl208);
-  std::cout << "activity_tl208 " << activity_tl208 << " +/- " << activity_err_tl208 << std::endl;
 
   double activity_bi214 = 0;
   double activity_err_bi214 = 0;
   minuit.GetParameter(0,activity_bi214,activity_err_bi214);
   std::cout << "activity_bi214 " << activity_bi214 << " +/- " << activity_err_bi214 << std::endl;
+
+  double activity_tl208 = 0;
+  double activity_err_tl208 = 0;
+  minuit.GetParameter(1,activity_tl208,activity_err_tl208);
+  std::cout << "activity_tl208 " << activity_tl208 << " +/- " << activity_err_tl208 << std::endl;
 
 
   // std::cout << " Measured bi214 activity is : " << activity_bi214*1e6 << " +/- " << activity_bi214_err*1e6 << " uBq/kg" << std::endl;
@@ -178,11 +179,10 @@ void multi_fit_bis()
   // g_likelihood->Draw();
 
 
-
-
   //tmp
-  double bi214_channel_1e1g_efficiency = 0.13;
-  double tl208_channel_1e1g_efficiency = 0.13;
+  // double efficiency[2] = {0.139367,0.123019};
+  double tl208_channel_1e1g_efficiency = 0.139367;
+  double bi214_channel_1e1g_efficiency = 0.123019;
 
   TFile * f_bi214 = TFile::Open("bi214_pdf.root");
   TH1F *bi214_pdf = (TH1F*)f_bi214->Get("1e1g_electron_gamma_energy_sum");
