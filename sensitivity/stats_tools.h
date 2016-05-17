@@ -1,3 +1,5 @@
+#ifndef STATS_TOOLS_H
+#define STATS_TOOLS_H 1
 
 int factorial(int n)
 {
@@ -20,3 +22,5 @@ double Poisson_probability(int n_obs, int n_exp)
 {
   return pow(n_exp,n_obs)*exp(-1*n_exp)/factorial(n_obs);
 }
+
+#endif

@@ -1,4 +1,8 @@
+#ifndef SENSITIVITY_MEASUREMENTS_H
+#define SENSITIVITY_MEASUREMENTS_H 1
+
 #include <map>
-#include <string>
 
 std::map < TString , double > quantity_efficiency;
+
+#endif

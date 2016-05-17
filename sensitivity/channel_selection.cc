@@ -3,31 +3,25 @@
 #include <TH1F.h>
 #include <TFile.h>
 #include <TTree.h>
-#include <TChain.h>
+#include <map>
 
 #include "analysis_config.h"
 #include "channel_selection.h"
-#include "sensitivity_measurements.h"
+// #include "sensitivity_measurements.h"
 
-void channel_selection(TString isotope, std::vector<TString> quantities_pdf, bool normalize)
+void channel_selection(TString isotope, std::vector<TString> quantities_pdf, std::map < TString , double > & quantity_efficiency, bool normalize)
 {
-  std::cout << "channel selection " << std::endl;
-
   TString input_file = "../" + isotope + "_tree.root";
   TString output_file = "../" + isotope + "_pdf.root";
 
   TFile *f = TFile::Open(input_file);
-  std::cout << "opened file " << input_file << std::endl;
-  f->ls();
-  TChain *tree = (TChain*)f->Get("snemodata;1");
-  tree->ls();
-  std::cout << "got the tree " << std::endl;
-
+  TTree *tree = (TTree*)f->Get("snemodata");
   TFile *f_output= new TFile(output_file, "RECREATE");
 
   double isotope_mc_size = get_isotope_mc_size(input_file);
+
   // TCut cut = get_channel_cut(channel);
-  // TCut cut_electron_energy = "1e_electron_energy > 1";
+
   for(unsigned int j=0; j<quantities_pdf.size(); ++j) {
 
     int nbins;
@@ -42,23 +36,20 @@ void channel_selection(TString isotope, std::vector<TString> quantities_pdf, boo
 
     TH1F* h = new TH1F(qty,qty,nbins,xmin,xmax);
 
-    std::cout << "project tree " << std::endl;
-
     tree->Project(qty,qty);
-
     // tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
-    // tree->Project("h","1e1g_electron_gamma_energy_sum");
-    TString isotope_quantity = isotope + "_" + qty;
-    quantity_efficiency.insert(std::pair<TString,double>(isotope_quantity,h->Integral(1,h->GetXaxis()->GetNbins())/isotope_mc_size));
 
-    std::cout << "normalizing " << std::endl;
+    TString isotope_quantity = isotope + "_" + qty;
+    // std::cout << "inserting " << isotope_quantity  <<  "  " <<  h->Integral(1,h->GetXaxis()->GetNbins())/isotope_mc_size << std::endl;
+    quantity_efficiency.insert(std::pair<TString,double>(isotope_quantity,h->Integral(1,h->GetXaxis()->GetNbins())/isotope_mc_size));
 
     if(normalize)
       h->Scale(1./h->Integral(1,h->GetXaxis()->GetNbins()));
     h->Write();
   }
+
   f->Close();
   f_output->Close();
 
-  return;
-}
+    return;
+  }

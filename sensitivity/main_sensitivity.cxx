@@ -1,21 +1,37 @@
 #include <iostream>
 #include "channel_selection.h"
+#include "pseudo_generator.h"
+#include <TTree.h>
+#include <TApplication.h>
+#include "sensitivity_measurements.h"
 
 int main() {
 
+  //Required to prevent crash : force the loading of all required library like TTree
+  TApplication *myapp=new TApplication("myapp",0,0);
+
+  //change to map where <isotope,activity>
   // std::vector<std::string> isotopes = {"tl208", "bi214"};
-  std::vector<std::string> isotopes;
-  isotopes.push_back("tl208");
+  // std::vector<double> activity = {100e-6, 100e-6};
+  std::map < std::string, double > isotope_activity;
+  isotope_activity.insert(std::pair<std::string,double>("tl208",100e-6));
+  isotope_activity.insert(std::pair<std::string,double>("bi214",100e-6));
 
   //maybe later moved to analysis_config.h
-  std::vector <TString> quantities_pdf;
-  quantities_pdf.push_back("1e1g_electron_gamma_energy_sum");
-  quantities_pdf.push_back("1e2g_electron_gammas_energy_sum");
+  std::vector <TString> quantities;
+  quantities.push_back("1e1g_electron_gamma_energy_sum");
+  quantities.push_back("1e2g_electron_gammas_energy_sum");
 
-  for (auto i = isotopes.begin(); i != isotopes.end(); ++i) {
-    std::cout << " " << *i << std::endl;
-    const std::string & a_isotope = *i;
-    channel_selection(a_isotope, quantities_pdf);
+  for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
+    const std::string & a_isotope = i->first;
+    const double & a_activity = i->second;
+    channel_selection(a_isotope, quantities, quantity_efficiency);
+  }
+
+  for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
+    const std::string & a_isotope = i->first;
+    const double & a_activity = i->second;
+    pseudo_generator(a_isotope,quantities,a_activity,quantity_efficiency);
   }
 
   TString pseudo_file = "pseudo.root";
