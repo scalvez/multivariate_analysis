@@ -14,8 +14,29 @@ find_package(ROOT 5.34.00 REQUIRED)
 # Ensure our code can see the ROOT etc headers
 include_directories(${ROOT_INCLUDE_DIRS})
 
+list(APPEND SensitivityMVA_HEADERS
+  sensitivity_constants.h
+  sensitivity_measurements.h
+  analysis_config.h
+  channel_selection.h
+  pseudo_generator.h
+  multi_fit.h
+  stats_tools.h
+  )
+
+list(APPEND SensitivityMVA_SOURCES
+  analysis_config.cc
+  channel_selection.cc
+  pseudo_generator.cc
+  multi_fit.cxx
+  main_sensitivity.cxx
+  )
+
 # Build a dynamic library from our sources
-add_library(SensitivityMVA SHARED sensitivity_measurements.h analysis_config.h analysis_config.cc channel_selection.h channel_selection.cc pseudo_generator.h pseudo_generator.cc sensitivity_constants.h)
+add_library(SensitivityMVA SHARED
+  ${SensitivityMVA_HEADERS}
+  ${SensitivityMVA_SOURCES}
+  )
 
 target_link_libraries(SensitivityMVA ${ROOT_LIBRARIES})
 
