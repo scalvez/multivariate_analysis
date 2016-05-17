@@ -7,13 +7,13 @@
 #include <iostream>
 
 #include "sensitivity_constants.h"
-#include "sensitivity_measurements.h"
+// #include "sensitivity_measurements.h"
 
 //to do : issue with redefinition of quantity_efficiency
 // #include "channel_selection.cc"
 
-// void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity, std::map < TString , double > & quantity_efficiency) {
-void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
+void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity, std::map < TString , double > & quantity_efficiency) {
+// void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
 
   TString input_file = "../" + isotope + "_pdf.root";
   TString output_file = "../" + isotope + "_pseudo.root";
@@ -30,8 +30,8 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
     TString key = isotope + "_" + qty;
 
     int n_events = int(activity*exposure*mass*quantity_efficiency.at(key));
-    // std::cout << "efficiency " << quantity_efficiency.size() << std::endl;
-    // std::cout << "events " << n_events << std::endl;
+    std::cout << "efficiency " << quantity_efficiency.at(key) << std::endl;
+    std::cout << "  events " << n_events << std::endl;
     // int n_events = 10000;
     int nbins = h_cdf->GetNbinsX();
 

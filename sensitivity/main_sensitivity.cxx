@@ -1,54 +1,45 @@
 #include <iostream>
+#include <TTree.h>
+#include <TSystem.h>
+#include <TApplication.h>
 #include "channel_selection.h"
 #include "pseudo_generator.h"
-#include <TTree.h>
-#include <TApplication.h>
+#include "multi_fit.h"
 #include "sensitivity_measurements.h"
+#include "analysis_config.h"
 
 int main() {
 
   //Required to prevent crash : force the loading of all required library like TTree
   TApplication *myapp=new TApplication("myapp",0,0);
 
-  //change to map where <isotope,activity>
-  // std::vector<std::string> isotopes = {"tl208", "bi214"};
-  // std::vector<double> activity = {100e-6, 100e-6};
-  std::map < std::string, double > isotope_activity;
-  isotope_activity.insert(std::pair<std::string,double>("tl208",100e-6));
-  isotope_activity.insert(std::pair<std::string,double>("bi214",100e-6));
-
-  //maybe later moved to analysis_config.h
-  std::vector <TString> quantities;
-  quantities.push_back("1e1g_electron_gamma_energy_sum");
-  quantities.push_back("1e2g_electron_gammas_energy_sum");
-
   for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
     const std::string & a_isotope = i->first;
     const double & a_activity = i->second;
-    channel_selection(a_isotope, quantities, quantity_efficiency);
+    std::cout << "debug channel selection " << a_isotope << "  " << a_activity << std::endl;
+    if (generate_pdf)
+      channel_selection(a_isotope, quantities, quantity_efficiency);
+    // channel_selection(a_isotope, quantities);
+    pseudo_generator(a_isotope,quantities,a_activity, quantity_efficiency);
   }
+  std::cout << "main ended " << std::endl;
 
-  for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
-    const std::string & a_isotope = i->first;
-    const double & a_activity = i->second;
-    pseudo_generator(a_isotope,quantities,a_activity,quantity_efficiency);
-  }
+  gSystem->Exec("hadd -f ../pseudo.root ../*_pseudo.root");
 
-  TString pseudo_file = "pseudo.root";
+  // for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
+  //   const std::string & a_isotope = i->first;
+  //   const double & a_activity = i->second;
+  //   if (generate_pseudo)
+  //     pseudo_generator(a_isotope,quantities,a_activity,quantity_efficiency);
+  //   const std::map < std::string, double > isotope_activity = {
+  //     {"tl208",100e-6},
+  //     {"bi214",100e-6}
+  //   };
 
-  // std::cout << "vector size is " << isotope_quantity_efficiency.size() << std::endl;
-  // std::map < TString, double > test = isotope_quantity_efficiency.at(0);
-  // std::cout << "map size is " << test.size() << std::endl;
+  //   std::map < std::string, std::vector<double> > activity_measurement;
+  //   multi_fit(activity_measurement);
+  // }
 
-  // std::map<TString, double>::iterator iter = test.begin();
-  // std::cout << (*iter).first << std::endl;
-
-  // std::vector<TString>::iterator iter = isotope_mc_files.begin();
-
-  // std::cout << *iter << std::endl;
-
-  // std::cout << " first  " << (*it).first << "    second  " << (*it).second << std::endl;
-  // std::cout << test["1e1g_electron_gamma_energy_sum"] << std::endl;
 }
 
 void main_sensitivity() {
