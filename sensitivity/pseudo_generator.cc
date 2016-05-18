@@ -11,11 +11,9 @@
 
 extern std::map < TString , double > quantity_efficiency;
 
-//to do : issue with redefinition of quantity_efficiency
-// #include "channel_selection.cc"
-
 void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
-// void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
+
+  std::cout << " ---- Isotope : " << isotope << std::endl;
 
   TString input_file = "../" + isotope + "_pdf.root";
   TString output_file = "../" + isotope + "_pseudo.root";
@@ -23,23 +21,26 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
   TFile *f = TFile::Open(input_file);
   TFile *f_output= new TFile(output_file, "RECREATE");
 
+  TRandom *rdm = new TRandom();
+  int n_decays = int(activity*exposure*mass);
+  int n_decays_rdm = rdm->Poisson(n_decays);
+
   for(auto it = quantities.begin(); it != quantities.end(); ++it) {
     TString qty = *it;
     TH1 *h = (TH1*)f->Get(qty);
     TH1 *h_cdf = h->GetCumulative();
-    // h_cdf->Draw();
-    // h->Draw("same");
     TString key = isotope + "_" + qty;
 
-    int n_events = int(activity*exposure*mass*quantity_efficiency.at(key));
-    std::cout << "  events " << n_events << std::endl;
-    std::cout << "efficiency " << quantity_efficiency.at(key) << std::endl;
-    // int n_events = 10000;
+    std::cout << " ---------- Qty : " << qty << std::endl;
+
+    int n_events = int(n_decays_rdm*quantity_efficiency.at(key));
+
+    std::cout << " Generating pseudo-experiment with " << n_decays << " decays" << std::endl;
+    std::cout << " Generating pseudo-experiment with " << n_decays_rdm << " rdm decays" << std::endl;
+    std::cout << " Generating pseudo-experiment with " << n_events << " events" << std::endl;
     int nbins = h_cdf->GetNbinsX();
 
     TH1F *h_pseudo = new TH1F(qty,qty,nbins,h->GetXaxis()->GetBinLowEdge(1),h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()));
-
-    std::cout << "Simulating pseudo-experiment with " << n_events << std::endl;
 
     for(int i=0; i<n_events;++i) {
       double rdm = gRandom->Uniform(1);
@@ -50,11 +51,6 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
         }
       }
     }
-
-    // h->Scale(n_events);
-    // h->Draw();
-    // h_pseudo->SetLineColor(kRed);
-    // h_pseudo->Draw("sameEP");
 
     h_pseudo->Write();
   }
