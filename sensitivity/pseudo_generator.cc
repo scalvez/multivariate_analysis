@@ -14,7 +14,7 @@ extern std::map < TString , double > quantity_efficiency;
 //to do : issue with redefinition of quantity_efficiency
 // #include "channel_selection.cc"
 
-void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity, std::map < TString , double > & quantity_efficiency) {
+void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
 // void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
 
   TString input_file = "../" + isotope + "_pdf.root";

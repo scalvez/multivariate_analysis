@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity, std::map < TString , double > & quantity_efficiency);
+void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity);
 // void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity);
 
 #endif

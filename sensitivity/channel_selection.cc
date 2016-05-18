@@ -11,7 +11,7 @@
 
 extern std::map < TString , double > quantity_efficiency;
 
-void channel_selection(TString isotope, std::vector<TString> quantities_pdf, std::map < TString , double > & quantity_efficiency, bool normalize)
+void channel_selection(TString isotope, std::vector<TString> quantities_pdf, bool normalize)
 {
   TString input_file = "../" + isotope + "_tree.root";
   TString output_file = "../" + isotope + "_pdf.root";
