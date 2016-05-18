@@ -4,12 +4,14 @@
 cmake_minimum_required(VERSION 3.3)
 project(SensitivityMVA VERSION 0.1.0)
 
-set(CMAKE_CXX_FLAGS "-W -Wall -std=c++14")
+set(CMAKE_CXX_FLAGS "-W -Wall -Wl,--no-as-needed -std=c++14")
 
 # Will install module and support program
 include(GNUInstallDirs)
 
 find_package(ROOT 5.34.00 REQUIRED)
+set(ROOT_COMPONENTS Minuit)
+find_package(ROOT 5.34.00 REQUIRED ${ROOT_COMPONENTS})
 
 # Ensure our code can see the ROOT etc headers
 include_directories(${ROOT_INCLUDE_DIRS})
