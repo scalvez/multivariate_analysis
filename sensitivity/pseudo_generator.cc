@@ -35,8 +35,8 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
 
     int n_events = int(n_decays_rdm*quantity_efficiency.at(key));
 
-    std::cout << " Generating pseudo-experiment with " << n_decays << " decays" << std::endl;
-    std::cout << " Generating pseudo-experiment with " << n_decays_rdm << " rdm decays" << std::endl;
+    // std::cout << " Generating pseudo-experiment with " << n_decays << " decays" << std::endl;
+    // std::cout << " Generating pseudo-experiment with " << n_decays_rdm << " rdm decays" << std::endl;
     std::cout << " Generating pseudo-experiment with " << n_events << " events" << std::endl;
     int nbins = h_cdf->GetNbinsX();
 

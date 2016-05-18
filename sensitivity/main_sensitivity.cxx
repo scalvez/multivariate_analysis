@@ -11,14 +11,20 @@
 
 int main() {
 
+  std::cout << " Starting the sensitivity measurement..." << std::endl;
+
+  std::cout << " Channel selection..." << std::endl;
   if (generate_pdf) {
     for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
       const std::string & a_isotope = i->first;
-      const double & a_activity = i->second;
+      std::cout << "      Isotope : " << a_isotope << std::endl;
       channel_selection(a_isotope, quantities);
     }
   }
 
+  std::cout << " Channel selection operated" << std::endl;
+
+  std::cout << " Pseudo experiments generation " << std::endl;
   unsigned int number_of_pseudo_experiments = 1;
   for(unsigned int n_pseudo = 0; n_pseudo < number_of_pseudo_experiments; ++n_pseudo) {
     std::map < std::string, std::vector<double> > activity_measurement;
