@@ -11,37 +11,33 @@
 
 int main() {
 
-  for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
-    const std::string & a_isotope = i->first;
-    const double & a_activity = i->second;
-    if (generate_pdf)
-      channel_selection(a_isotope, quantities, quantity_efficiency);
-    if (generate_pseudo)
-      pseudo_generator(a_isotope,quantities,a_activity, quantity_efficiency);
+  if (generate_pdf) {
+    for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
+      const std::string & a_isotope = i->first;
+      const double & a_activity = i->second;
+      channel_selection(a_isotope, quantities);
+    }
   }
 
-  gSystem->Exec("hadd -f ../pseudo.root ../*_pseudo.root");
+  unsigned int number_of_pseudo_experiments = 1;
+  for(unsigned int n_pseudo = 0; n_pseudo < number_of_pseudo_experiments; ++n_pseudo) {
+    std::map < std::string, std::vector<double> > activity_measurement;
+    for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
+      const std::string & a_isotope = i->first;
+      const double & a_activity = i->second;
+      if (generate_pseudo)
+        pseudo_generator(a_isotope,quantities,a_activity);
+    }
+    gSystem->Exec("hadd -f ../pseudo.root ../*_pseudo.root");
 
-  // for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
-  //   const std::string & a_isotope = i->first;
-  //   const double & a_activity = i->second;
-  //   if (generate_pseudo)
-  //     pseudo_generator(a_isotope,quantities,a_activity,quantity_efficiency);
-  //   const std::map < std::string, double > isotope_activity = {
-  //     {"tl208",100e-6},
-  //     {"bi214",100e-6}
-  //   };
-  // }
-
-  std::map < std::string, std::vector<double> > activity_measurement;
-  multi_fit(activity_measurement);
-
-  std::cout << " - Reconstructed activities - " << std::endl;
-  for (auto i = activity_measurement.begin(); i != activity_measurement.end(); ++i) {
-    std::string isotope = i->first;
-    double activity = i->second.at(0);
-    std::cout << " Isotope : " << isotope << std::endl;
-    std::cout << " Activity : " << activity * 1e6  << " uBq/kg " << std::endl;
+    multi_fit(activity_measurement);
+    std::cout << " - Reconstructed activities - " << std::endl;
+    for (auto i = activity_measurement.begin(); i != activity_measurement.end(); ++i) {
+      std::string isotope = i->first;
+      double activity = i->second.at(0);
+      std::cout << " Isotope : " << isotope << std::endl;
+      std::cout << " Activity : " << activity * 1e6  << " uBq/kg " << std::endl;
+    }
   }
 
   quantity_efficiency.clear();
