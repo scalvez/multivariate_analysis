@@ -4,6 +4,5 @@
 #include <map>
 
 std::map < TString , double > quantity_efficiency;
-// extern std::map < TString , double > quantity_efficiency;
 
 #endif

@@ -41,7 +41,7 @@ void fcn_to_minimize(int& npar, double* deriv, double& f, double par[], int flag
           TString isotope = k->first;
           // std::cout << "isotope " << isotope << std::endl;
 
-          TString channel = qty + "_" + isotope;
+          TString channel = isotope + "_" + qty;
           // double efficiency = quantity_efficiency.at(channel);
           TString pdf_file = isotope + "_pdf.root";
           TFile *file = TFile::Open(pdf_file);

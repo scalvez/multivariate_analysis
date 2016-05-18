@@ -9,6 +9,8 @@
 #include "channel_selection.h"
 // #include "sensitivity_measurements.h"
 
+extern std::map < TString , double > quantity_efficiency;
+
 void channel_selection(TString isotope, std::vector<TString> quantities_pdf, std::map < TString , double > & quantity_efficiency, bool normalize)
 {
   TString input_file = "../" + isotope + "_tree.root";
