@@ -90,10 +90,10 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
 
   unsigned int count = 0;
   for(auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
-    par[count] = 20e-6;
+    par[count] = 10e-6;
     stepSize[count] = 1e-6;
-    minVal[count] = 1e-9;
-    maxVal[count] = 1e-3;
+    minVal[count] = 1e-6;
+    maxVal[count] = 5e-4;
     parName[count] = "Activity of " + i->first + " in uBq/kg";
 
     minuit.DefineParameter(count, parName[count].c_str(),

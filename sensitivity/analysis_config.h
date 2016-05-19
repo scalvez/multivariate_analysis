@@ -10,6 +10,7 @@
 const bool generate_pdf = true;
 const bool generate_pseudo = true;
 const bool poisson_pseudo = false;
+const unsigned int number_of_pseudo_experiments = 1;
 const bool fit = true;
 
 // const double bi214_channel_1e1a_efficiency = 10733./2500000;
