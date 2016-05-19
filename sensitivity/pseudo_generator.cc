@@ -22,8 +22,14 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
   TFile *f_output= new TFile(output_file, "RECREATE");
 
   TRandom *rdm = new TRandom();
+
   int n_decays = int(activity*exposure*mass);
-  int n_decays_rdm = rdm->Poisson(n_decays);
+  int n_decays_rdm = 0;
+
+  if(poisson_pseudo)
+    n_decays_rdm = rdm->Poisson(n_decays);
+  else
+    n_decays_rdm = n_decays;
 
   for(auto it = quantities.begin(); it != quantities.end(); ++it) {
     TString qty = *it;
