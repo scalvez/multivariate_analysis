@@ -1,10 +1,8 @@
 #include <iostream>
-
 #include <TH1F.h>
 #include <TFile.h>
 #include <TTree.h>
 #include <map>
-
 #include "analysis_config.h"
 #include "channel_selection.h"
 // #include "sensitivity_measurements.h"

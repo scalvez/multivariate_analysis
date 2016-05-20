@@ -34,7 +34,8 @@ int main() {
   std::cout << " Pseudo experiments generation " << std::endl;
   // unsigned int number_of_pseudo_experiments = 100;
   for(unsigned int n_pseudo = 0; n_pseudo < number_of_pseudo_experiments; ++n_pseudo) {
-    std::cout << " [] Pseudo experiment n°" << n_pseudo << std::endl;
+    std::cout << " [] Pseudo experiment n°" << n_pseudo+1 << " / "
+              << number_of_pseudo_experiments << std::endl;
     std::map < std::string, std::vector<double> > activity_measurement;
     for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
       const std::string & a_isotope = i->first;

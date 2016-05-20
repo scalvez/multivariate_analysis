@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "sensitivity_constants.h"
+#include "analysis_config.h"
 // #include "sensitivity_measurements.h"
 
 extern std::map < TString , double > quantity_efficiency;

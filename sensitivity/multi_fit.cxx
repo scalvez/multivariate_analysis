@@ -1,5 +1,10 @@
 #include "TH1.h"
+#include "THStack.h"
 #include "TFile.h"
+#include "TCanvas.h"
+#include "TPad.h"
+#include "TPad.h"
+#include "TLine.h"
 #include "TMinuit.h"
 #include "TSystem.h"
 #include <vector>
@@ -46,6 +51,9 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
       }
   }
   f_pseudo->Close();
+
+  std::cout << " New minimization" << std::endl;
+
   return;
 }
 
@@ -90,7 +98,8 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
 
   unsigned int count = 0;
   for(auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
-    par[count] = 10e-6;
+    par[count] = i->second;
+    // par[count] = 10e-6;
     stepSize[count] = 1e-6;
     minVal[count] = 1e-6;
     maxVal[count] = 5e-4;
@@ -102,6 +111,8 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
   }
 
   minuit.Migrad();
+  // minuit.mnsimp(); //shit
+  // minuit.mnseek(); //shit
 
   unsigned int count_bis = 0;
   for(auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
@@ -126,75 +137,92 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
   // }
   // g_likelihood->Draw();
 
+  //-----
 
-  // //tmp
-  // double bi214_channel_1e1g_efficiency = 0.1;
-  // double tl208_channel_1e1g_efficiency = 0.1;
+  if(print_fits && number_of_pseudo_experiments==1) {
+  // TFile *f_fits = new TFile("../fits.root","RECREATE");
+  TFile *f_fits = TFile::Open("../fits.root","RECREATE");
 
-  // TFile * f_bi214 = TFile::Open("bi214_pdf.root");
-  // TH1F *bi214_pdf = (TH1F*)f_bi214->Get("1e1g_electron_gamma_energy_sum");
+  for(auto i = quantities.begin(); i != quantities.end(); ++i)
+    {
+      TString quantity = *i;
+      TString tl208_quantity = "tl208_" + quantity;
 
-  // bi214_pdf->SetLineColor(kOrange);
-  // bi214_pdf->SetFillColor(kOrange);
+      std::cout << "test " << quantity_efficiency.size() << "  " <<  tl208_quantity << std::endl;
 
-  // TFile * f_tl208 = TFile::Open("tl208_pdf.root");
-  // TH1F *tl208_pdf = (TH1F*)f_tl208->Get("1e1g_electron_gamma_energy_sum");
-  // tl208_pdf->SetLineColor(kGreen+1);
-  // tl208_pdf->SetFillColor(kGreen+1);
+      double tl208_quantity_efficiency = quantity_efficiency.at(tl208_quantity);
 
-  // TFile * f_pseudo = TFile::Open("pseudo.root");
-  // TH1F *pseudo = (TH1F*)f_pseudo->Get("pseudo");
-  // pseudo->SetLineColor(kBlack);
-  // // pseudo->SetMarkerStyle(1);
+      TString bi214_quantity = "bi214_" + quantity;
+      double bi214_quantity_efficiency = quantity_efficiency.at(bi214_quantity);
 
-  // THStack *hs = new THStack("hs","Energy [keV]");
-  // bi214_pdf->Scale(activity_bi214*bi214_channel_1e1g_efficiency*mass*exposure);
-  // tl208_pdf->Scale(activity_tl208*tl208_channel_1e1g_efficiency*mass*exposure);
+      TFile * f_bi214 = TFile::Open("../bi214_pdf.root");
+      TH1F *bi214_pdf = (TH1F*)f_bi214->Get(quantity);
 
-  // hs->Add(bi214_pdf);
-  // hs->Add(tl208_pdf);
+      bi214_pdf->SetLineColor(kOrange);
+      bi214_pdf->SetFillColor(kOrange);
 
-  // TCanvas *c1 = new TCanvas("c1","example",600,700);
+      TFile * f_tl208 = TFile::Open("../tl208_pdf.root");
+      TH1F *tl208_pdf = (TH1F*)f_tl208->Get(quantity);
 
-  // TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
-  // // pad1->SetBottomMargin(0.05);
-  // pad1->SetTopMargin(0.03);
-  // pad1->Draw();
-  // pad1->cd();
+      tl208_pdf->SetLineColor(kGreen+1);
+      tl208_pdf->SetFillColor(kGreen+1);
 
-  // hs->DrawClone();
+      TFile * f_pseudo = TFile::Open("../pseudo.root");
+      TH1F *pseudo = (TH1F*)f_pseudo->Get(quantity);
+      pseudo->SetLineColor(kBlack);
+      // pseudo->SetMarkerStyle(1);
 
-  // pseudo->DrawClone("samePE");
-  // c1->cd();
+      THStack *hs = new THStack(quantity,"Variable");
+      bi214_pdf->Scale(isotope_activity.at("bi214")*bi214_quantity_efficiency*mass*exposure);
+      tl208_pdf->Scale(isotope_activity.at("tl208")*tl208_quantity_efficiency*mass*exposure);
 
-  // // TH1 *h_sum = new TH1F("h_sum","h_sum");
+      hs->Add(bi214_pdf);
+      hs->Add(tl208_pdf);
 
-  // bi214_pdf->Sumw2();
-  // bi214_pdf->Add(tl208_pdf);
-  // //Error computation to check
-  // // bi214_pdf->Sumw2();
-  // pseudo->Sumw2();
+      TCanvas *c1 = new TCanvas("c1","example",600,700);
 
-  // TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
-  // pad2->SetTopMargin(0.0);
-  // // pad2->SetBottomMargin(0.05);
-  // pad2->Draw();
-  // pad2->cd();
+      TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
+      // pad1->SetBottomMargin(0.05);
+      pad1->SetTopMargin(0.03);
+      pad1->Draw();
+      pad1->cd();
 
-  // bi214_pdf->SetStats(0);
-  // pseudo->SetStats(0);
+      hs->DrawClone();
 
-  // pseudo->Divide(bi214_pdf);
+      pseudo->DrawClone("samePE");
+      c1->cd();
 
-  // pseudo->GetYaxis()->SetRangeUser(0.6,1.4);
-  // pseudo->Draw("ep");
+      // TH1 *h_sum = new TH1F("h_sum","h_sum");
 
-  // TLine *line = new TLine(0,1,5,1);
-  // // line->SetLineColor(kBlack);
-  // line->SetLineStyle(kDashed);
-  // line->Draw("same");
+      bi214_pdf->Sumw2();
+      bi214_pdf->Add(tl208_pdf);
+      //Error computation to check
+      // bi214_pdf->Sumw2();
+      pseudo->Sumw2();
 
-  // c1->cd();
+      TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
+      pad2->SetTopMargin(0.0);
+      // pad2->SetBottomMargin(0.05);
+      pad2->Draw();
+      pad2->cd();
 
+      bi214_pdf->SetStats(0);
+      pseudo->SetStats(0);
+
+      pseudo->Divide(bi214_pdf);
+
+      pseudo->GetYaxis()->SetRangeUser(0.6,1.4);
+      pseudo->Draw("ep");
+
+      TLine *line = new TLine(0,1,5,1);
+      // line->SetLineColor(kBlack);
+      line->SetLineStyle(kDashed);
+      line->Draw("same");
+
+      c1->cd();
+      TString file = quantity + ".pdf";
+        c1->Print(file);
+    }
+  }
   return;
 }
