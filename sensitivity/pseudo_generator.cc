@@ -24,7 +24,14 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
 
   TRandom *rdm = new TRandom();
 
-  int n_decays = int(activity*exposure*mass);
+  int n_decays = 0;
+  if (isotope.Contains("2nu"))
+    n_decays = int(mass*exposure_y/halflife_2nu*const_se);
+  else if (isotope.Contains("radon"))
+    n_decays = int(activity*exposure_sec*tracker_volume);
+  else
+    n_decays = int(activity*exposure_sec*mass);
+
   int n_decays_rdm = 0;
 
   if(poisson_pseudo)

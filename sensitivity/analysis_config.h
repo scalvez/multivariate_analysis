@@ -19,18 +19,26 @@ const bool print_fits = true;
 // const double tl208_channel_1e1g_efficiency = 0.139637;
 // const double bi214_channel_1e1g_efficiency = 0.123019;
 
-const TString internal_probability_min = "0.04";
-const double internal_probability_max = 1;
-const double vertices_probability_min = 0;
-const double vertices_probability_max = 0.01;
+// const TString internal_probability_min = "0.04";
+// const double internal_probability_max = 1;
+// const double vertices_probability_min = 0;
+// const double vertices_probability_max = 0.01;
 
-// 2e_int channel beta-beta-like events
+// // 2e_int channel beta-beta-like events
 // const std::string good_internal_probability_min = "2e_electrons_internal_probability > 0.04 ";
-// const char *prob_cut = good_internal_probability_min.c_str();
+
+// // const char prob_cut[200] = good_internal_probability_min;
+// const std::string test_string = "2e_electrons_internal_probability > 0.04 ";
+// const char *prob_cut = test_string.c_str();
+
+// // const TString prob_cut = "2e_electrons_internal_probability > " + internal_probability_min;
+
 // const TCut good_internal_probability_cut = prob_cut;
 
 const std::map < std::string, double > isotope_activity = {
+  {"2nu",9},
   {"bi214",10e-6},
+  {"radon",100e-6},
   {"tl208",2e-6}
 };
 
