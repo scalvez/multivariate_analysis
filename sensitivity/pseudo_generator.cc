@@ -52,7 +52,7 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
 
     // std::cout << " Generating pseudo-experiment with " << n_decays << " decays" << std::endl;
     // std::cout << " Generating pseudo-experiment with " << n_decays_rdm << " rdm decays" << std::endl;
-    std::cout << " Generating pseudo-experiment with " << n_events << " events" << std::endl;
+    std::cout << " Generating pseudo-experiment with " << n_events << " events" << "(eff=" << quantity_efficiency.at(key) << ")" << std::endl;
     int nbins = h_cdf->GetNbinsX();
 
     TH1F *h_pseudo = new TH1F(qty,qty,nbins,h->GetXaxis()->GetBinLowEdge(1),h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()));
