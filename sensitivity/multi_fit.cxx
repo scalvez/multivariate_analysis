@@ -39,7 +39,7 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
           TH1F *h = (TH1F*)f->Get(qty);
 
           if(isotope.Contains("2nu"))
-            b += const_se / (par[count] * 9e19) * efficiency * h->GetBinContent(i) * mass * exposure_y;
+            b += const_se / (par[count] * 1e19) * efficiency * h->GetBinContent(i) * mass * exposure_y;
           else if(isotope.Contains("radon"))
             b += par[count] * efficiency * h->GetBinContent(i) * tracker_volume * exposure_sec;
           else
@@ -88,7 +88,7 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
   }
   // f_pseudo->Close();
 
-  std::cout << " New minimization  " << f <<  std::endl;
+  std::cout << " New minimization  " << f << "  " << "  par0 : " << par[0] << "     par1 : " << par[1] << "     par2 : " << par[2] << "     par3 " << par[3] << std::endl;
 
   return;
 }
@@ -122,7 +122,7 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
 {
   std::cout << " Starting the fit " << std::endl;
 
-  const int npar = 4;
+  const int npar = isotope_activity.size();
 
   TMinuit minuit(npar);
 
@@ -141,11 +141,13 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
     stepSize[count] = param_guess/10.;
     minVal[count] = param_guess/10.;
     maxVal[count] = param_guess * 10.;
-    parName[count] = "Activity of " + i->first + " in uBq/kg";
+    parName[count] = i->first;
     minuit.DefineParameter(count, parName[count].c_str(),
                            par[count], stepSize[count], minVal[count], maxVal[count]);
     count++;
   }
+
+  // minuit.FixParameter(0);
 
   minuit.Migrad();
   // minuit.mnsimp(); //shit, not converging
