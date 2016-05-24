@@ -37,6 +37,8 @@ int main() {
 
   if (generate_pseudo) {
 
+    gSystem->Exec("rm ../*_pseudo.root");
+
     std::cout << " Pseudo experiments generation " << std::endl;
     // unsigned int number_of_pseudo_experiments = 100;
     for(unsigned int n_pseudo = 0; n_pseudo < number_of_pseudo_experiments; ++n_pseudo) {
