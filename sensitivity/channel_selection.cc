@@ -37,6 +37,14 @@ void channel_selection(TString isotope, std::vector<TString> quantities_pdf, boo
     TH1F* h = new TH1F(qty,qty,nbins,xmin,xmax);
 
     tree->Project(qty,qty);
+
+    // h->ClearUnderflowAndOverflow(); Unavailable with this version of ROOT
+    h->SetBinContent(0,0);
+    h->SetBinContent(nbins+1,0);
+
+    // h->SetDirectory(0);
+    // Don't care about the weights for now
+
     // tree->Project("h","1e1g_electron_gamma_energy_sum","","",1000);
 
     TString isotope_quantity = isotope + "_" + qty;
