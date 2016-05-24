@@ -11,6 +11,7 @@
 // #include "sensitivity_measurements.h"
 
 extern std::map < TString , double > quantity_efficiency;
+extern std::map < TString , TH1F* > quantity_pdf;
 
 void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
 
@@ -65,6 +66,9 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
         }
       }
     }
+
+    TString pseudo_quantity = "pseudo_" + qty;
+    quantity_pdf.insert(std::pair<TString,TH1F*>(pseudo_quantity,h_pseudo));
 
     h_pseudo->Write();
   }
