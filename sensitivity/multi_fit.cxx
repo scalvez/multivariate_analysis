@@ -88,8 +88,15 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
   }
   // f_pseudo->Close();
 
-  std::cout << " New minimization  " << f << "  " << "  par0 : " << par[0] << "     par1 : " << par[1] << "     par2 : " << par[2] << "     par3 " << par[3] << std::endl;
+  std::cout << " New minimization  " << f << "    ";
+    // << "  par0 : " << par[0] << "     par1 : " << par[1] << "     par2 : " << par[2] << "     par3 " << par[3] << std::endl;
 
+  unsigned int c = 0;
+  for(auto  i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
+    std::cout << i->first << " : " << par[c] << "    ";
+    ++c;
+  }
+  std::cout << std::endl;
   return;
 }
 
