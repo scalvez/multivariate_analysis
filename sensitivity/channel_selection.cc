@@ -58,7 +58,24 @@ void channel_selection(TString isotope, std::vector<TString> quantities_pdf, boo
 
     TH1F* h = new TH1F(qty,qty,nbins,xmin,xmax);
 
-    tree->Project(qty,qty);
+    //Remove un-initialized events (MC sim before May 26th 16)
+    //this, or concatenate char and convert to string
+    if(qty.Contains("2e1g")) {
+      TCut cut = "2e1g_electrons_gammas_energy_sum != 0";
+      tree->Project(qty,qty,cut);
+    }
+    else if(qty.Contains("2e2g")) {
+      TCut cut = "2e2g_electrons_gammas_energy_sum != 0";
+      tree->Project(qty,qty,cut);
+    }
+    else if(qty.Contains("2e3g")) {
+      TCut cut = "2e3g_electrons_gammas_energy_sum != 0";
+      tree->Project(qty,qty,cut);
+    }
+    else
+      tree->Project(qty,qty);
+
+    // tree->Project(qty,qty);
 
     // h->ClearUnderflowAndOverflow(); Unavailable with this version of ROOT
     h->SetBinContent(0,0);
