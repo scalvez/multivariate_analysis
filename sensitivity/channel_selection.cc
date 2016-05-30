@@ -9,7 +9,7 @@
 // #include "sensitivity_measurements.h"
 
 extern std::map < TString , double > quantity_efficiency;
-extern std::map < TString , TH1F* > quantity_pdf;
+// extern std::map < TString , TH1F* > quantity_pdf;
 
 void channel_selection(TString isotope, std::vector<TString> quantities_pdf, bool normalize)
 {
@@ -34,8 +34,8 @@ void channel_selection(TString isotope, std::vector<TString> quantities_pdf, boo
   // const TCut good_internal_probability_cut = prob_cut;
   // const TCut beta_beta_like_cut = prob_cut;
 
-  TString input_file = "../" + isotope + "_tree.root";
-  TString output_file = "../" + isotope + "_pdf.root";
+  TString input_file = "../trees/" + isotope + "_tree.root";
+  TString output_file = "../pdf/" + isotope + "_pdf.root";
 
   TFile *f = TFile::Open(input_file);
   TTree *tree = (TTree*)f->Get("snemodata");
@@ -94,12 +94,12 @@ void channel_selection(TString isotope, std::vector<TString> quantities_pdf, boo
       h->Scale(1./h->Integral(1,h->GetXaxis()->GetNbins()));
     h->Write();
 
-    std::cout << "Inserting pair " << std::endl;
-    // quantity_pdf.insert(std::pair<TString,TH1F*>(isotope_quantity,h));
-    quantity_pdf[isotope_quantity] = h;
-    std::cout << "Inserted pair " << std::endl;
-    std::cout << "Checking histo reading " << std::endl;
-    std::cout << "                       " << quantity_pdf.at(isotope_quantity)->GetBinContent(20) << std::endl;
+    // std::cout << "Inserting pair " << std::endl;
+    // // quantity_pdf.insert(std::pair<TString,TH1F*>(isotope_quantity,h));
+    // // quantity_pdf[isotope_quantity] = h;
+    // std::cout << "Inserted pair " << std::endl;
+    // std::cout << "Checking histo reading " << std::endl;
+    // std::cout << "               " << isotope_ <<  "    " << quantity_pdf.at(isotope_quantity)->GetBinContent(20) << std::endl;
 
   }
 
