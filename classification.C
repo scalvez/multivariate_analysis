@@ -135,11 +135,12 @@ void classification( TString myMethodList = "" )
 
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
-   TString fname_signal = "./root_export_0nu_25G.root";
-   TString fname_background_2nu = "./root_export_2nu_25G.root";
-   TString fname_background_tl208 = "./root_export_tl208_25G.root";
-   TString fname_background_bi214 = "./root_export_bi214_25G.root";
-   TString fname_background_radon = "./root_export_radon_25G.root";
+
+   TString fname_signal = "./data_0nu.root";
+   TString fname_background_2nu = "./data_2nu.root";
+   TString fname_background_tl208 = "./data_tl208.root";
+   TString fname_background_bi214 = "./data_bi214.root";
+   TString fname_background_radon = "./data_radon.root";
 
    TFile *input_signal = TFile::Open( fname_signal );
    TFile *input_background_2nu = TFile::Open( fname_background_2nu );
@@ -160,15 +161,21 @@ void classification( TString myMethodList = "" )
    TTree *background_radon = (TTree*)input_background_radon->Get("snemodata;");
 
    // global event weights per tree (see below for setting event-wise weights)
-   Double_t signalWeight     = 0.0000000001;
-   Double_t backgroundWeight = 1.0;
+   // Double_t signalWeight     = 1000000000.;
+   // Double_t backgroundWeight = 1.0;
+
+   Double_t signalWeight = 1.0;
+   Double_t backgroundWeight_2nu = 100505.0;
+   Double_t backgroundWeight_tl = 1.3;
+   Double_t backgroundWeight_bi = 9.1;
+   Double_t backgroundWeight_radon = 43.3;
 
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
-   factory->AddBackgroundTree( background_2nu, backgroundWeight );
-   factory->AddBackgroundTree( background_tl208, backgroundWeight );
-   factory->AddBackgroundTree( background_bi214, backgroundWeight );
-   factory->AddBackgroundTree( background_radon, backgroundWeight );
+   factory->AddBackgroundTree( background_2nu, backgroundWeight_2nu );
+   factory->AddBackgroundTree( background_tl208, backgroundWeight_tl );
+   factory->AddBackgroundTree( background_bi214, backgroundWeight_bi );
+   factory->AddBackgroundTree( background_radon, backgroundWeight_radon );
 
    // factory->SetBackgroundWeightExpression( "weight" );
 
@@ -320,17 +327,27 @@ void classification( TString myMethodList = "" )
 
    // Support Vector Machine
    if (Use["SVM"])
-      factory->BookMethod( TMVA::Types::kSVM, "SVM", "Gamma=0.25:Tol=0.001:VarTransform=Norm" );
+     factory->BookMethod( TMVA::Types::kSVM, "SVM", "Gamma=0.25:Tol=0.001:VarTransform=Norm" );
 
-   // Boosted Decision Trees
-   if (Use["BDTG"]) // Gradient Boost
-      factory->BookMethod( TMVA::Types::kBDT, "BDTG",
-                           "!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2" );
+   // // Best and more stable version to date
+   // if (Use["BDT"]) // no depth, by default 3
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=0.00000000000000000000000001%:SeparationType=GiniIndex:nCuts=400");
 
-   // Slight improvement
+   // // Boosted Decision Trees
+   // if (Use["BDTG"]) // Gradient Boost
+   //    factory->BookMethod( TMVA::Types::kBDT, "BDTG",
+   //                         "!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2" );
+
+   // Best conf talk lal
    if (Use["BDT"])  // Adaptive Boost
      factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                          "!H:!V:NTrees=800:MinNodeSize=0.00000000000000000000000001%:SeparationType=GiniIndex:nCuts=100");
+                          "!H:!V:NTrees=1000:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=6:BoostType=AdaBoost");
+
+   // // Slight improvement
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=0.00000000000000000000000001%:SeparationType=GiniIndex:nCuts=100");
 
    // // standard
    // if (Use["BDT"])  // Adaptive Boost
