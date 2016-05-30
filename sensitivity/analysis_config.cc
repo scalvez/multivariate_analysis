@@ -13,15 +13,20 @@ void get_histogram_options(TString quantity, int & nbins, double & xmin, double 
     xmin = 0;
     xmax = 1;
   }
-  else if(quantity.Contains("angle")) {
+  else if(quantity.Contains("cos_angle")) {
     nbins = 100;
     xmin = -1;
     xmax = 1;
   }
+  else if(quantity.Contains("angle")) {
+    nbins = 100;
+    xmin = 0;
+    xmax = 3.14159;
+  }
   else if (quantity.Contains("track_length")) {
     nbins = 100;
     xmin = 0;
-    xmax = 500;
+    xmax = 2000;
   }
   else {
     //Also maybe the alpha delayed time
