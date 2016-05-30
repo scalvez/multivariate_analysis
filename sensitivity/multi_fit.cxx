@@ -22,7 +22,7 @@ extern std::map < TString , TH1F* > quantity_pdf;
 
 void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], int /*flag*/)
 {
-  TFile * f_pseudo = TFile::Open("../pseudo.root");
+  TFile * f_pseudo = TFile::Open("../pseudo/pseudo.root");
   f = 0.;
   for(auto j = quantities.begin(); j != quantities.end(); ++j) {
     TString qty = *j;
@@ -34,7 +34,7 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
           TString isotope = k->first;
           TString channel = isotope + "_" + qty;
           double efficiency = quantity_efficiency.at(channel);
-          TString pdf_file = "../" + isotope + "_pdf.root";
+          TString pdf_file = "../pdf/" + isotope + "_pdf.root";
           TFile * f = TFile::Open(pdf_file);
           TH1F *h = (TH1F*)f->Get(qty);
 
@@ -60,7 +60,6 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
         // TH1F *pseudo = quantity_pdf.at(pseudo_qty);
 
         // std::cout << "            " << pseudo->GetNbinsX() << std::endl;
-
 
         // std::cout << "            "  << quantity_pdf.at(pseudo_qty)->GetBinContent(20) << std::endl;
 
@@ -154,7 +153,7 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
     count++;
   }
 
-  // minuit.FixParameter(0);
+  minuit.FixParameter(2);
 
   minuit.Migrad();
   // minuit.mnsimp(); //shit, not converging
@@ -168,7 +167,6 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
     activity_measurement.insert(std::pair<std::string,std::vector<double>>(i->first,{activity,activity_err}));
     count_bis++;
   }
-
 
   // TGraph *g_likelihood = new TGraph(100);
   // double activity_start = 1e-5;

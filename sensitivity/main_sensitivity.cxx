@@ -37,7 +37,7 @@ int main() {
 
   if (generate_pseudo) {
 
-    gSystem->Exec("rm ../*_pseudo.root");
+    gSystem->Exec("rm ../pseudo/*_pseudo.root");
 
     std::cout << " Pseudo experiments generation " << std::endl;
     // unsigned int number_of_pseudo_experiments = 100;
@@ -50,7 +50,7 @@ int main() {
         const double & a_activity = i->second;
         pseudo_generator(a_isotope,quantities,a_activity);
       }
-      gSystem->Exec("hadd -f ../pseudo.root ../*_pseudo.root");
+      gSystem->Exec("hadd -f ../pseudo/pseudo.root ../pseudo/*_pseudo.root");
       if(fit) {
         multi_fit(activity_measurement);
         std::cout << " - Reconstructed activities - " << std::endl;
@@ -61,19 +61,21 @@ int main() {
           std::cout << " Activity : " << activity * 1e6  << " uBq/kg " << std::endl;
 
           if(isotope == "2nu")
-            tl_measurements.push_back(activity);
+            se_2nu_measurements.push_back(activity);
           if(isotope == "tl208")
             tl_measurements.push_back(activity * 1e6);
           // h_tl_meas->Fill(activity * 1e6);
           if(isotope == "bi214")
             bi_measurements.push_back(activity * 1e6);
           // h_bi_meas->Fill(activity * 1e6);
+          if(isotope == "radon")
+            radon_measurements.push_back(activity * 1e6);
         }
 
         TH1F *h_2nu_meas = new TH1F("h_2nu_meas","h_2nu_meas",100,7,11);
         TH1F *h_tl_meas = new TH1F("h_tl_meas","h_tl_meas",100,0,4);
         TH1F *h_bi_meas = new TH1F("h_bi_meas","h_bi_meas",100,8,12);
-        TH1F *h_radon_meas = new TH1F("h_bi_meas","h_bi_meas",100,140,160);
+        TH1F *h_radon_meas = new TH1F("h_radon_meas","h_radon_meas",100,140,160);
         TFile *f_output= new TFile("../measurements.root", "RECREATE");
 
         for(auto i = 0; i < tl_measurements.size(); ++i) {
