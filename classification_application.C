@@ -224,7 +224,7 @@ void classification_application( TString myMethodList = "" )
   //
 TFile *input(0);
 
-TString fname = "./root_export_bi214_25G.root";
+TString fname = "./data_radon.root";
 
 input = TFile::Open( fname ); // check if file in local directory exists
 
@@ -374,7 +374,7 @@ for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
   // --- Write histograms
 
-TFile *target = new TFile ("bdt_score_bi214_merge_4.root","RECREATE");
+TFile *target = new TFile ("bdt_score_radon_merge_3.root","RECREATE");
 
 if (Use["Likelihood"   ])   histLk     ->Write();
   if (Use["LikelihoodD"  ])   histLkD    ->Write();

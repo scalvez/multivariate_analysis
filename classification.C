@@ -165,7 +165,7 @@ void classification( TString myMethodList = "" )
    // Double_t backgroundWeight = 1.0;
 
    Double_t signalWeight = 1.0;
-   Double_t backgroundWeight_2nu = 100505.0;
+   Double_t backgroundWeight_2nu = 100505.0/25;
    Double_t backgroundWeight_tl = 1.3;
    Double_t backgroundWeight_bi = 9.1;
    Double_t backgroundWeight_radon = 43.3;
@@ -339,10 +339,15 @@ void classification( TString myMethodList = "" )
    //    factory->BookMethod( TMVA::Types::kBDT, "BDTG",
    //                         "!H:!V:NTrees=1000:MinNodeSize=2.5%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=100:MaxDepth=2" );
 
+   // // Best conf talk lal with gradient
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=1000:MinNodeSize=0.005%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=400:MaxDepth=4");
+
    // Best conf talk lal
    if (Use["BDT"])  // Adaptive Boost
      factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                          "!H:!V:NTrees=1000:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=6:BoostType=AdaBoost");
+                          "!H:!V:NTrees=800:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=4:BoostType=AdaBoost");
 
    // // Slight improvement
    // if (Use["BDT"])  // Adaptive Boost

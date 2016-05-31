@@ -30,9 +30,17 @@ namespace conf_sens {
 
   const double T_2nu = 9.0e19; //years
 
+  const double eff_0nu_2e = 0.25462;
+  // const double eff_2nu_full_range_2e = 0.10104;
+  const double eff_2nu_2e = 0.21712 / 25;
+  const double eff_tl208_2e = 0.00121521;
+  const double eff_bi214_2e = 0.00165497;
+  const double eff_radon_2e = 0.00024013;
+
+  //old, 0nu and 2nu for LAL talk
   // const double eff_0nu_2e = 427876./(); //uBq/kg
-  const double eff_0nu_2e = 427876./(57*30000); //uBq/kg
-  const double eff_2nu_2e = 1031781./(124*40000)/25 ; //uBq/kg  // only correct above 2MeV
+  // const double eff_0nu_2e = 427876./(57*30000); //uBq/kg
+  // const double eff_2nu_2e = 1031781./(124*40000)/25 ; //uBq/kg  // only correct above 2MeV
   // const double eff_tl208_2e = 10875./1e7; //uBq/kg
   // const double eff_bi214_2e = 29148./1e7; //uBq/kg
   // const double eff_radon_2e = 729./1e7; //150uBq/m3
@@ -43,18 +51,18 @@ namespace conf_sens {
   // const double eff_bi214_1e = 1230205./1e7; //uBq/kg
   // const double eff_radon_1e = 104205./1e7; //150uBq/m3
 
-  const double tl208_activity = 2. /1e6; //Bq/kg
+  const double tl208_activity = 2e-6; //Bq/kg
   // const double tl208_activity = 23.6 /1e6; //Bq/kg
-  const double bi214_activity = 10. /1e6; //Bq/kg
+  const double bi214_activity = 10e-6; //Bq/kg
   // const double bi214_activity = 338. /1e6; //Bq/kg
-  const double radon_activity = 150 /1e6; //Bq/m3
+  const double radon_activity = 150e-6; //Bq/m3
 
   const double k_sens = log(2.) * 6.022e23  * isotope_mass * 1000 * exposure / isotope_mass_number;
 
   // const double eff_0nu_bdt_window = 0.1366;
   // const double eff_0nu_roi_window = 0.1502;
-  const double eff_0nu_bdt_window = 0.25022*0.70972;
-  const double eff_0nu_roi_window = 0.25022*0.69416;
+  // const double eff_0nu_bdt_window = 0.25022*0.70972;
+  // const double eff_0nu_roi_window = 0.25022*0.69416;
 }
 
 #endif
