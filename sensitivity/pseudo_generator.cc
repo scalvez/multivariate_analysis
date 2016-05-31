@@ -13,7 +13,7 @@
 extern std::map < TString , double > quantity_efficiency;
 extern std::map < TString , TH1F* > quantity_pdf;
 
-void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity) {
+void pseudo_generator(TString isotope, std::vector<TString> quantities, double activity, double seed) {
 
   std::cout << " ---- Isotope : " << isotope << std::endl;
 
@@ -24,6 +24,7 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
   TFile *f_output= new TFile(output_file, "RECREATE");
 
   TRandom *rdm = new TRandom();
+  rdm->SetSeed(seed);
 
   int n_decays = 0;
   if (isotope.Contains("2nu"))
@@ -58,9 +59,10 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
     TH1F *h_pseudo = new TH1F(qty,qty,nbins,h->GetXaxis()->GetBinLowEdge(1),h->GetXaxis()->GetBinUpEdge(h->GetNbinsX()));
 
     for(int i=0; i<n_events;++i) {
-      double rdm = gRandom->Uniform(1);
+      double rdm_number = rdm->Uniform(1);
+      std::cout << "rdm " << rdm_number << std::endl;
       for(int j=1; j<=nbins;++j) {
-        if(h_cdf->GetBinContent(j)>rdm) {
+        if(h_cdf->GetBinContent(j)>rdm_number) {
           h_pseudo->Fill(h_cdf->GetXaxis()->GetBinCenter(j));
           break;
         }

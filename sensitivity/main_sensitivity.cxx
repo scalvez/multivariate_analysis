@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <TTree.h>
 #include <TString.h>
@@ -12,7 +13,14 @@
 #include "analysis_config.h"
 #include "sensitivity_constants.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+
+  if(argc != 2) {
+    std::cout << " ERROR : A seed must be provided" << std::endl;
+    return 1;
+  }
+
+  double seed = atof(argv[1]);
 
   std::vector <double> se_2nu_measurements;
   std::vector <double> tl_measurements;
@@ -48,7 +56,7 @@ int main() {
       for (auto i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
         const std::string & a_isotope = i->first;
         const double & a_activity = i->second;
-        pseudo_generator(a_isotope,quantities,a_activity);
+        pseudo_generator(a_isotope,quantities,a_activity,seed);
       }
       gSystem->Exec("hadd -f ../pseudo/pseudo.root ../pseudo/*_pseudo.root");
       if(fit) {
@@ -72,24 +80,32 @@ int main() {
             radon_measurements.push_back(activity * 1e6);
         }
 
-        TH1F *h_2nu_meas = new TH1F("h_2nu_meas","h_2nu_meas",100,7,11);
-        TH1F *h_tl_meas = new TH1F("h_tl_meas","h_tl_meas",100,0,4);
-        TH1F *h_bi_meas = new TH1F("h_bi_meas","h_bi_meas",100,8,12);
-        TH1F *h_radon_meas = new TH1F("h_radon_meas","h_radon_meas",100,140,160);
-        TFile *f_output= new TFile("../measurements.root", "RECREATE");
+        // TH1F *h_2nu_meas = new TH1F("h_2nu_meas","h_2nu_meas",100,7,11);
+        // TH1F *h_tl_meas = new TH1F("h_tl_meas","h_tl_meas",100,0,4);
+        // TH1F *h_bi_meas = new TH1F("h_bi_meas","h_bi_meas",100,8,12);
+        // TH1F *h_radon_meas = new TH1F("h_radon_meas","h_radon_meas",100,140,160);
+        // TFile *f_output= new TFile("../measurements.root", "RECREATE");
 
-        for(auto i = 0; i < tl_measurements.size(); ++i) {
-          h_2nu_meas->Fill(se_2nu_measurements.at(i));
-          h_tl_meas->Fill(tl_measurements.at(i));
-          h_bi_meas->Fill(bi_measurements.at(i));
-          h_radon_meas->Fill(radon_measurements.at(i));
-        }
-        h_2nu_meas->Write();
-        h_tl_meas->Write();
-        h_bi_meas->Write();
-        h_radon_meas->Write();
+        // for(auto i = 0; i < tl_measurements.size(); ++i) {
+        //   h_2nu_meas->Fill(se_2nu_measurements.at(i));
+        //   h_tl_meas->Fill(tl_measurements.at(i));
+        //   h_bi_meas->Fill(bi_measurements.at(i));
+        //   h_radon_meas->Fill(radon_measurements.at(i));
+        // }
+        // h_2nu_meas->Write();
+        // h_tl_meas->Write();
+        // h_bi_meas->Write();
+        // h_radon_meas->Write();
       }
     }
+
+    ofstream myfile;
+    myfile.open ("measurements.txt", std::ios::app);
+    myfile << "2nu " << se_2nu_measurements.at(0) << "  "
+           << "tl " << tl_measurements.at(0) << "  "
+           << "bi " << bi_measurements.at(0) << "  "
+           << "radon " << radon_measurements.at(0) << "\n";
+
   }
 
   quantity_efficiency.clear();
@@ -98,7 +114,7 @@ int main() {
   return 0;
 }
 
-void main_sensitivity() {
-  main();
-  return;
-}
+// void main_sensitivity() {
+//   main();
+//   return;
+// }

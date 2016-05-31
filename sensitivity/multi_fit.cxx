@@ -153,6 +153,7 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
     count++;
   }
 
+  minuit.FixParameter(0);
   minuit.FixParameter(2);
 
   minuit.Migrad();
