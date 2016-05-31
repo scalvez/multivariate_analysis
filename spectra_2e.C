@@ -23,11 +23,11 @@
 void spectra_2e()
 {
 
-  TFile * f_0nu = TFile::Open("root_export_0nu_25G.root");
-  TFile * f_2nu = TFile::Open("root_export_2nu_25G.root");
-  TFile * f_tl208 = TFile::Open("root_export_tl208_25G.root");
-  TFile * f_bi214 = TFile::Open("root_export_bi214_25G.root");
-  TFile * f_radon = TFile::Open("root_export_radon_25G.root");
+  TFile * f_0nu = TFile::Open("./data_0nu.root");
+  TFile * f_2nu = TFile::Open("./data_2nu.root");
+  TFile * f_tl208 = TFile::Open("./data_tl208.root");
+  TFile * f_bi214 = TFile::Open("./data_bi214.root");
+  TFile * f_radon = TFile::Open("./data_radon.root");
 
   TTree *tree_0nu = (TTree*)f_0nu->Get("snemodata");
   TTree *tree_2nu = (TTree*)f_2nu->Get("snemodata");
@@ -35,11 +35,11 @@ void spectra_2e()
   TTree *tree_bi214 = (TTree*)f_bi214->Get("snemodata");
   TTree *tree_radon = (TTree*)f_radon->Get("snemodata");
 
-  TH1F *h_0nu = new TH1F("0nu","0nu",100,0,4);
-  TH1F *h_2nu = new TH1F("2nu","2nu",100,0,4);
-  TH1F *h_tl208 = new TH1F("tl208","tl208",100,0,4);
-  TH1F *h_bi214 = new TH1F("bi214","bi214",100,0,4);
-  TH1F *h_radon = new TH1F("radon","radon",100,0,4);
+  TH1F *h_0nu = new TH1F("0nu","0nu",100,0,5);
+  TH1F *h_2nu = new TH1F("2nu","2nu",100,0,5);
+  TH1F *h_tl208 = new TH1F("tl208","tl208",100,0,5);
+  TH1F *h_bi214 = new TH1F("bi214","bi214",100,0,5);
+  TH1F *h_radon = new TH1F("radon","radon",100,0,5);
 
   double electrons_energy_sum_0nu = 0;
   tree_0nu->SetBranchAddress("2e_electrons_energy_sum",&electrons_energy_sum_0nu);
@@ -53,8 +53,8 @@ void spectra_2e()
   double electrons_energy_sum_2nu = 0;
   tree_2nu->SetBranchAddress("2e_electrons_energy_sum",&electrons_energy_sum_2nu);
   int nentries_2nu = tree_2nu->GetEntriesFast();
-  // for(int i = 0; i< nentries_2nu; ++i) {
-  for(int i = 0; i< 100000; ++i) {
+  for(int i = 0; i< nentries_2nu; ++i) {
+  // for(int i = 0; i< 100000; ++i) {
     tree_2nu->GetEntry(i);
     // std::cout << electrons_energy_sum_2nu << std::endl;
     h_2nu->Fill(electrons_energy_sum_2nu);
