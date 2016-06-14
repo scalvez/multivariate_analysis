@@ -134,11 +134,25 @@ void classification_application_simple( TString myMethodList = "" )
 
   Float_t electrons_energy_sum = 0;
 
+  Float_t electrons_internal_probability = 0;
+  Float_t electrons_external_probability = 0;
+  Float_t electrons_vertices_probability = 0;
+  Float_t electrons_cos_angle = 0;
+  Float_t electron_Emin_track_length = 0;
+  Float_t electron_Emax_track_length = 0;
+
+
   reader->AddVariable( "2e_electron_minimal_energy", & electron_minimal_energy );
   reader->AddVariable( "2e_electron_maximal_energy", & electron_maximal_energy );
   reader->AddVariable( "2e_electrons_energy_difference", &electrons_energy_difference );
-
   reader->AddVariable( "2e_electrons_energy_sum", &electrons_energy_sum );
+  reader->AddVariable( "2e_electrons_internal_probability", &electrons_internal_probability );
+  reader->AddVariable( "2e_electrons_external_probability", &electrons_external_probability );
+  reader->AddVariable( "2e_electrons_vertices_probability", &electrons_vertices_probability );
+  reader->AddVariable( "2e_electrons_cos_angle", &electrons_cos_angle );
+  reader->AddVariable( "2e_electron_Emin_track_length", &electron_Emin_track_length );
+  reader->AddVariable( "2e_electron_Emax_track_length", &electron_Emax_track_length );
+
   // --- Book the MVA methods
 
   TString dir    = "weights/";
@@ -210,12 +224,12 @@ void classification_application_simple( TString myMethodList = "" )
   // Prepare input tree (this must be replaced by your data source)
   // in this example, there is a toy tree with signal and one with background events
   // we'll later on use only the "signal" events for the test in this example.
-  //
-TFile *input(0);
 
-TString fname = "./root_export_2nu_25G.root";
+  TFile *input(0);
 
-input = TFile::Open( fname ); // check if file in local directory exists
+  TString fname = "./application_samples/app_2nu_810k.root";
+
+  input = TFile::Open( fname ); // check if file in local directory exists
 
   if (!input) {
     std::cout << "ERROR: could not open data file" << std::endl;
@@ -230,12 +244,24 @@ input = TFile::Open( fname ); // check if file in local directory exists
   Double_t br_2e_electron_minimal_energy = 1;
   Double_t br_2e_electron_maximal_energy = 1;
   Double_t br_2e_electrons_energy_difference = 1;
+  Double_t br_2e_electrons_internal_probability = 1;
+  Double_t br_2e_electrons_external_probability = 1;
+  Double_t br_2e_electrons_vertices_probability = 1;
+  Double_t br_2e_electrons_cos_angle = 1;
+  Double_t br_2e_electron_Emin_track_length = 1;
+  Double_t br_2e_electron_Emax_track_length = 1;
 
   Double_t br_2e_electrons_energy_sum = 1;
 
   theTree->SetBranchAddress( "2e_electron_minimal_energy", &br_2e_electron_minimal_energy);
   theTree->SetBranchAddress( "2e_electron_maximal_energy", &br_2e_electron_maximal_energy);
   theTree->SetBranchAddress( "2e_electrons_energy_difference", &br_2e_electrons_energy_difference);
+  theTree->SetBranchAddress( "2e_electrons_internal_probability", &br_2e_electrons_internal_probability);
+  theTree->SetBranchAddress( "2e_electrons_external_probability", &br_2e_electrons_external_probability);
+  theTree->SetBranchAddress( "2e_electrons_vertices_probability", &br_2e_electrons_vertices_probability);
+  theTree->SetBranchAddress( "2e_electrons_cos_angle", &br_2e_electrons_cos_angle);
+  theTree->SetBranchAddress( "2e_electron_Emin_track_length", &br_2e_electron_Emin_track_length);
+  theTree->SetBranchAddress( "2e_electron_Emax_track_length", &br_2e_electron_Emax_track_length);
 
   theTree->SetBranchAddress( "2e_electrons_energy_sum", &br_2e_electrons_energy_sum);
 
@@ -254,9 +280,16 @@ for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
     if (ievt%1000 == 0) std::cout << "--- ... Processing event: " << ievt << std::endl;
 
     theTree->GetEntry(ievt);
+
     electron_minimal_energy = (Float_t) br_2e_electron_minimal_energy;
     electron_maximal_energy = (Float_t) br_2e_electron_minimal_energy;
     electrons_energy_difference = (Float_t) br_2e_electrons_energy_difference;
+    electrons_internal_probability = (Float_t) br_2e_electrons_internal_probability;
+    electrons_external_probability = (Float_t) br_2e_electrons_external_probability;
+    electrons_vertices_probability = (Float_t) br_2e_electrons_vertices_probability;
+    electrons_cos_angle = (Float_t) br_2e_electrons_cos_angle;
+    electron_Emin_track_length = (Float_t) br_2e_electron_Emin_track_length;
+    electron_Emax_track_length = (Float_t) br_2e_electron_Emax_track_length;
 
     electrons_energy_sum = (Float_t) br_2e_electrons_energy_sum;
 
@@ -347,7 +380,7 @@ for (Long64_t ievt=0; ievt<theTree->GetEntries();ievt++) {
 
   // --- Write histograms
 
-TFile *target = new TFile ("bdt_score_2nu_merge_19.root","RECREATE");
+TFile *target = new TFile ("bdt_score_2nu_merge_159.root","RECREATE");
 
 if (Use["Likelihood"   ])   histLk     ->Write();
   if (Use["LikelihoodD"  ])   histLkD    ->Write();

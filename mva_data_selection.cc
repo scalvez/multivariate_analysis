@@ -25,8 +25,8 @@
 
 void mva_data_selection()
 {
-  TFile *oldfile = TFile::Open("/home/calvez/nemo/work_dir/multivariate_analysis/sensitivity/trees/radon_tree.root");
-  TFile *newfile = new TFile("./data_radon.root","recreate");
+  TFile *oldfile = TFile::Open("/home/calvez/nemo/work_dir/multivariate_analysis/sensitivity/trees/0nu_rhc_tree.root");
+  TFile *newfile = new TFile("./data_0nu_rhc.root","recreate");
 
   TTree *oldtree = (TTree*)oldfile->Get("snemodata");
 

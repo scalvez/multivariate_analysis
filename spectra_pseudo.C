@@ -22,12 +22,11 @@
 
 void spectra_pseudo(TString input, TString output)
 {
-
   TFile *f = TFile::Open(input);
 
   TTree *tree = (TTree*)f->Get("snemodata");
 
-  TH1F *h = new TH1F("energy_spectrum","enegry_spectrum",100,0,4);
+  TH1F *h = new TH1F("energy_spectrum","enegry_spectrum",100,0,5);
 
   TFile *f_output= new TFile(output,"RECREATE");
 

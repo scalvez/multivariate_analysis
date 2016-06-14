@@ -88,7 +88,7 @@ void fcn_to_minimize(int& /*npar*/, double* /*deriv*/, double& f, double par[], 
   // f_pseudo->Close();
 
   std::cout << " New minimization  " << f << "    ";
-    // << "  par0 : " << par[0] << "     par1 : " << par[1] << "     par2 : " << par[2] << "     par3 " << par[3] << std::endl;
+  // << "  par0 : " << par[0] << "     par1 : " << par[1] << "     par2 : " << par[2] << "     par3 " << par[3] << std::endl;
 
   unsigned int c = 0;
   for(auto  i = isotope_activity.begin(); i != isotope_activity.end(); ++i) {
@@ -153,8 +153,10 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
     count++;
   }
 
-  minuit.FixParameter(0);
-  minuit.FixParameter(2);
+   minuit.FixParameter(0); //2nu
+  minuit.FixParameter(2); //radon
+  // minuit.FixParameter(1);
+  // minuit.FixParameter(3);
 
   minuit.Migrad();
   // minuit.mnsimp(); //shit, not converging
@@ -181,89 +183,89 @@ void multi_fit(std::map < std::string, std::vector<double> > & activity_measurem
   // g_likelihood->Draw();
 
   //-----
+  /*
+  if(print_fits && number_of_pseudo_experiments==1) {
+    // TFile *f_fits = new TFile("../fits.root","RECREATE");
+    TFile *f_fits = TFile::Open("../fits.root","RECREATE");
 
-  // if(print_fits && number_of_pseudo_experiments==1) {
-  // // TFile *f_fits = new TFile("../fits.root","RECREATE");
-  // TFile *f_fits = TFile::Open("../fits.root","RECREATE");
+    for(auto i = quantities.begin(); i != quantities.end(); ++i)
+      {
+        TString quantity = *i;
+        TString tl208_quantity = "tl208_" + quantity;
 
-  // for(auto i = quantities.begin(); i != quantities.end(); ++i)
-  //   {
-  //     TString quantity = *i;
-  //     TString tl208_quantity = "tl208_" + quantity;
+        std::cout << "test " << quantity_efficiency.size() << "  " <<  tl208_quantity << std::endl;
 
-  //     std::cout << "test " << quantity_efficiency.size() << "  " <<  tl208_quantity << std::endl;
+        double tl208_quantity_efficiency = quantity_efficiency.at(tl208_quantity);
 
-  //     double tl208_quantity_efficiency = quantity_efficiency.at(tl208_quantity);
+        TString bi214_quantity = "bi214_" + quantity;
+        double bi214_quantity_efficiency = quantity_efficiency.at(bi214_quantity);
 
-  //     TString bi214_quantity = "bi214_" + quantity;
-  //     double bi214_quantity_efficiency = quantity_efficiency.at(bi214_quantity);
+        TFile * f_bi214 = TFile::Open("../bi214_pdf.root");
+        TH1F *bi214_pdf = (TH1F*)f_bi214->Get(quantity);
 
-  //     TFile * f_bi214 = TFile::Open("../bi214_pdf.root");
-  //     TH1F *bi214_pdf = (TH1F*)f_bi214->Get(quantity);
+        bi214_pdf->SetLineColor(kOrange);
+        bi214_pdf->SetFillColor(kOrange);
 
-  //     bi214_pdf->SetLineColor(kOrange);
-  //     bi214_pdf->SetFillColor(kOrange);
+        TFile * f_tl208 = TFile::Open("../tl208_pdf.root");
+        TH1F *tl208_pdf = (TH1F*)f_tl208->Get(quantity);
 
-  //     TFile * f_tl208 = TFile::Open("../tl208_pdf.root");
-  //     TH1F *tl208_pdf = (TH1F*)f_tl208->Get(quantity);
+        tl208_pdf->SetLineColor(kGreen+1);
+        tl208_pdf->SetFillColor(kGreen+1);
 
-  //     tl208_pdf->SetLineColor(kGreen+1);
-  //     tl208_pdf->SetFillColor(kGreen+1);
+        TFile * f_pseudo = TFile::Open("../pseudo.root");
+        TH1F *pseudo = (TH1F*)f_pseudo->Get(quantity);
+        pseudo->SetLineColor(kBlack);
+        // pseudo->SetMarkerStyle(1);
 
-  //     TFile * f_pseudo = TFile::Open("../pseudo.root");
-  //     TH1F *pseudo = (TH1F*)f_pseudo->Get(quantity);
-  //     pseudo->SetLineColor(kBlack);
-  //     // pseudo->SetMarkerStyle(1);
+        THStack *hs = new THStack(quantity,"Variable");
+        bi214_pdf->Scale(isotope_activity.at("bi214")*bi214_quantity_efficiency*mass*exposure_sec);
+        tl208_pdf->Scale(isotope_activity.at("tl208")*tl208_quantity_efficiency*mass*exposure_sec);
 
-  //     THStack *hs = new THStack(quantity,"Variable");
-  //     bi214_pdf->Scale(isotope_activity.at("bi214")*bi214_quantity_efficiency*mass*exposure);
-  //     tl208_pdf->Scale(isotope_activity.at("tl208")*tl208_quantity_efficiency*mass*exposure);
+        hs->Add(bi214_pdf);
+        hs->Add(tl208_pdf);
 
-  //     hs->Add(bi214_pdf);
-  //     hs->Add(tl208_pdf);
+        TCanvas *c1 = new TCanvas("c1","example",600,700);
 
-  //     TCanvas *c1 = new TCanvas("c1","example",600,700);
+        TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
+        // pad1->SetBottomMargin(0.05);
+        pad1->SetTopMargin(0.03);
+        pad1->Draw();
+        pad1->cd();
 
-  //     TPad *pad1 = new TPad("pad1","pad1",0,0.3,1,1);
-  //     // pad1->SetBottomMargin(0.05);
-  //     pad1->SetTopMargin(0.03);
-  //     pad1->Draw();
-  //     pad1->cd();
+        hs->DrawClone();
 
-  //     hs->DrawClone();
+        pseudo->DrawClone("samePE");
+        c1->cd();
 
-  //     pseudo->DrawClone("samePE");
-  //     c1->cd();
+        bi214_pdf->Sumw2();
+        bi214_pdf->Add(tl208_pdf);
+        //Error computation to check
+        // bi214_pdf->Sumw2();
+        pseudo->Sumw2();
 
-  //     bi214_pdf->Sumw2();
-  //     bi214_pdf->Add(tl208_pdf);
-  //     //Error computation to check
-  //     // bi214_pdf->Sumw2();
-  //     pseudo->Sumw2();
+        TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
+        pad2->SetTopMargin(0.0);
+        pad2->Draw();
+        pad2->cd();
 
-  //     TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
-  //     pad2->SetTopMargin(0.0);
-  //     pad2->Draw();
-  //     pad2->cd();
+        bi214_pdf->SetStats(0);
+        pseudo->SetStats(0);
 
-  //     bi214_pdf->SetStats(0);
-  //     pseudo->SetStats(0);
+        pseudo->Divide(bi214_pdf);
 
-  //     pseudo->Divide(bi214_pdf);
+        pseudo->GetYaxis()->SetRangeUser(0.6,1.4);
+        pseudo->Draw("ep");
 
-  //     pseudo->GetYaxis()->SetRangeUser(0.6,1.4);
-  //     pseudo->Draw("ep");
+        TLine *line = new TLine(0,1,5,1);
+        // line->SetLineColor(kBlack);
+        line->SetLineStyle(kDashed);
+        line->Draw("same");
 
-  //     TLine *line = new TLine(0,1,5,1);
-  //     // line->SetLineColor(kBlack);
-  //     line->SetLineStyle(kDashed);
-  //     line->Draw("same");
-
-  //     c1->cd();
-  //     TString file = quantity + ".pdf";
-  //     c1->Print(file);
-  //   }
-  // }
+        c1->cd();
+        TString file = quantity + ".pdf";
+        c1->Print(file);
+      }
+  }*/
 
   return;
 }

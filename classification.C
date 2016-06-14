@@ -136,7 +136,9 @@ void classification( TString myMethodList = "" )
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
 
-   TString fname_signal = "./data_0nu.root";
+   // TString fname_signal = "./data_0nu_mm.root";
+   TString fname_signal = "./data_0nu_rhc.root";
+   // TString fname_background_2nu = "./data_2nu.root";
    TString fname_background_2nu = "./data_2nu.root";
    TString fname_background_tl208 = "./data_tl208.root";
    TString fname_background_bi214 = "./data_bi214.root";
@@ -165,10 +167,14 @@ void classification( TString myMethodList = "" )
    // Double_t backgroundWeight = 1.0;
 
    Double_t signalWeight = 1.0;
-   Double_t backgroundWeight_2nu = 100505.0/25;
-   Double_t backgroundWeight_tl = 1.3;
-   Double_t backgroundWeight_bi = 9.1;
-   Double_t backgroundWeight_radon = 43.3;
+   // Double_t backgroundWeight_2nu = 100505.0/25;
+   // Double_t backgroundWeight_tl = 1.3 * 10;
+   // Double_t backgroundWeight_bi = 9.1 * 30;
+   // Double_t backgroundWeight_radon = 43.3;
+   Double_t backgroundWeight_2nu = 1;
+   Double_t backgroundWeight_tl = 1;
+   Double_t backgroundWeight_bi = 1;
+   Double_t backgroundWeight_radon = 1;
 
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
@@ -342,12 +348,12 @@ void classification( TString myMethodList = "" )
    // // Best conf talk lal with gradient
    // if (Use["BDT"])  // Adaptive Boost
    //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
-   //                        "!H:!V:NTrees=1000:MinNodeSize=0.005%:BoostType=Grad:Shrinkage=0.10:UseBaggedBoost:BaggedSampleFraction=0.5:nCuts=400:MaxDepth=4");
+   //                        "!H:!V:NTrees=1000:MinNodeSize=0.005%:BoostType=Grad:nCuts=400:MaxDepth=6");
 
    // Best conf talk lal
    if (Use["BDT"])  // Adaptive Boost
      factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                          "!H:!V:NTrees=800:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=4:BoostType=AdaBoost");
+                          "!H:!V:NTrees=1000:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=6:BoostType=AdaBoost");
 
    // // Slight improvement
    // if (Use["BDT"])  // Adaptive Boost

@@ -36,9 +36,8 @@ void sensitivity()
 
   // TFile * f_roi = TFile::Open("roi_spectra.root");
   // TFile * f_roi = TFile::Open("spectra_2e_mm.root");
-  // TFile * f_roi = TFile::Open("spectra_2e_rhc.root");
-  // TFile * f_roi = TFile::Open("spectra_2e_M1.root");
-  TFile * f_roi = TFile::Open("spectra_2e.root");
+  TFile * f_roi = TFile::Open("spectra_2e_rhc.root");
+  // TFile * f_roi = TFile::Open("spectra_2e.root");
 
   TH1F *h_0nu_roi = (TH1F*)f_roi->Get("0nu");
   TH1F *h_2nu_roi = (TH1F*)f_roi->Get("2nu");
@@ -251,8 +250,7 @@ void sensitivity()
         lower_window_energy = h_0nu_roi->GetBinLowEdge(i);
         upper_window_energy = h_0nu_roi->GetBinLowEdge(j);
       }
-      best_halflife_limit_roi_2d = std::max(best_halflife_limit_roi_2d, halflife)
-;
+      best_halflife_limit_roi_2d = std::max(best_halflife_limit_roi_2d, halflife);
       halflife_2d_roi->SetBinContent(i,j,halflife);
     }
   }
@@ -355,7 +353,7 @@ void sensitivity()
   // std::cout << "     BDT    :  "  << best_halflife_limit_bdt << "  ,   N_bg = " << Ncount_bdt
   //           << "  (N_2nu = " << N_2nu_bdt << std::endl; // << ", N_radon = " << N_radon_bdt << ")" << std::endl;
   std::cout << "      Cut is  " << best_bdt_cut_bin << "  or  " << best_bdt_cut_score << std::endl;
-  std::cout << "      Signal efficiency : " << h_0nu_bdt->Integral(best_bdt_cut_bin,h_0nu_bdt->GetNbinsX())/h_0nu_bdt->Integral(0, h_0nu_bdt->GetNbinsX()) << "   Background efficiency : " << h_2nu_bdt->Integral(best_bdt_cut_bin,h_2nu_bdt->GetNbinsX())/h_2nu_bdt->Integral(0, h_2nu_bdt->GetNbinsX()) << std::endl;
+  std::cout << "      Signal efficiency : " << h_0nu_bdt->Integral(best_bdt_cut_bin,h_0nu_bdt->GetNbinsX())/h_0nu_bdt->Integral(0, h_0nu_bdt->GetNbinsX()) << std::endl;// << "   Background efficiency : " << h_2nu_bdt->Integral(best_bdt_cut_bin,h_2nu_bdt->GetNbinsX())/h_2nu_bdt->Integral(0, h_2nu_bdt->GetNbinsX()) << std::endl;
   std::cout << "     ROI    :  "  << best_halflife_limit_roi << "  ,   N_bg = " << Ncount_roi
             << "  (N_2nu = " << N_2nu_roi << ", N_tl = " << N_tl_roi << ", N_bi = " << N_bi_roi << ", N_radon = " << N_radon_roi << ")" << std::endl;
   // std::cout << "     ROI    :  "  << best_halflife_limit_roi << "  ,   N_bg = " << Ncount_roi
@@ -366,7 +364,7 @@ void sensitivity()
  //           << "  (N_2nu = " << N_2nu_roi_2d << std::endl; //", N_radon = " << N_radon_roi_2d << ")" << std::endl;
   std::cout << "      Lower window is  " << lower_window_bin << "  or  " << lower_window_energy << std::endl;
   std::cout << "      Upper window is  " << upper_window_bin << "  or  " << upper_window_energy << std::endl;
-  std::cout << "      Signal efficiency : " << h_0nu_roi->Integral(lower_window_bin,upper_window_bin)/h_0nu_roi->Integral(0, h_0nu_roi->GetNbinsX()) << "   Background efficiency : " << h_2nu_roi->Integral(lower_window_bin,upper_window_bin)/h_2nu_roi->Integral(0, h_2nu_roi->GetNbinsX()) << std::endl;
+  std::cout << "      Signal efficiency : " << h_0nu_roi->Integral(lower_window_bin,upper_window_bin)/h_0nu_roi->Integral(0, h_0nu_roi->GetNbinsX()) << std::endl; // "   Background efficiency : " << h_2nu_roi->Integral(lower_window_bin,upper_window_bin)/h_2nu_roi->Integral(0, h_2nu_roi->GetNbinsX()) << std::endl;
   // std::cout << " eff " << tmp_eff <<std::endl;
 
   f_output->cd();

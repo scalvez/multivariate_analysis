@@ -33,7 +33,8 @@ void sensitivity_0nu_2nu()
   THStack *h_stack_bdt_norm = (THStack*)f_bdt->Get("hs");
 
   // TFile * f_roi = TFile::Open("roi_spectra.root");
-  TFile * f_roi = TFile::Open("spectra_2e.root");
+  // TFile * f_roi = TFile::Open("spectra_2e_mm.root");
+  TFile * f_roi = TFile::Open("spectra_2e_rhc.root");
 
   TH1F *h_0nu_roi = (TH1F*)f_roi->Get("0nu");
   TH1F *h_2nu_roi = (TH1F*)f_roi->Get("2nu");

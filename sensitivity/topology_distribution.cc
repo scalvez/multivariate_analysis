@@ -6,17 +6,19 @@
 
 void topology_distribution()
 {
-  // TString input_file = "./trees/2nu_tree.root";
-  // TString output_file = "./topo_distrib/2nu_topo_distrib.root";
+  TString input_file = "./trees/2nu_tree.root";
+  TString output_file = "./topo_distrib/2nu_topo_distrib.root";
+  // TString output_file = "./tmp.root";
   // TString input_file = "./trees/tl208_tree.root";
   // TString output_file = "./topo_distrib/tl208_topo_distrib.root";
   // TString input_file = "./trees/bi214_tree.root";
   // TString output_file = "./topo_distrib/bi214_topo_distrib.root";
-  TString input_file = "./trees/radon_tree.root";
-  TString output_file = "./topo_distrib/radon_topo_distrib.root";
+  // TString input_file = "./trees/radon_tree.root";
+  // TString output_file = "./topo_distrib/radon_topo_distrib.root";
 
   TCanvas *c= new TCanvas();
 
+  // double mc_size = 0.5e8;
   double mc_size = 1e8;
 
   // TGaxis::SetMaxDigits(2);
@@ -107,6 +109,8 @@ void topology_distribution()
   for (unsigned int i = 1; i<=11; i++) {
     unsigned int h_td_i = h_td->GetBinContent(i)*mc_size;
     h_td->SetBinError(i,sqrt((h_td_i+1)*(h_td_i+2)/(double(mc_size)+2)/(mc_size+3)-(h_td_i+1)*(h_td_i+1)/(double(mc_size)+2)/(mc_size+2)));
+
+    std::cout << h_td->GetXaxis()->GetBinLabel(i) << "  " <<  h_td->GetBinContent(i) << std::endl;
   }
 
   // h_td->GetXaxis()->LabelsOption("v");
@@ -125,18 +129,18 @@ void topology_distribution()
   h_td->SetMarkerStyle(20);
   h_td->SetMarkerSize(1);
 
-  // h_td->SetMarkerColor(kBlue);
-  // h_td->SetLineColor(kBlue);
-  // h_td->SetFillColor(kBlue);
+  h_td->SetMarkerColor(kBlue);
+  h_td->SetLineColor(kBlue);
+  h_td->SetFillColor(kBlue);
   // h_td->SetMarkerColor(kGreen+1);
   // h_td->SetLineColor(kGreen+1);
   // h_td->SetFillColor(kGreen+1);
   // h_td->SetMarkerColor(kOrange-3);
   // h_td->SetLineColor(kOrange-3);
   // h_td->SetFillColor(kOrange-3);
-  h_td->SetMarkerColor(kMagenta);
-  h_td->SetLineColor(kMagenta);
-  h_td->SetFillColor(kMagenta);
+  // h_td->SetMarkerColor(kMagenta);
+  // h_td->SetLineColor(kMagenta);
+  // h_td->SetFillColor(kMagenta);
   h_td->SetDrawOption("PEB");
   gPad->SetLogy();
   h_td->Draw("PEB");

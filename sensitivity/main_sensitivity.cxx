@@ -101,11 +101,12 @@ int main(int argc, char* argv[]) {
 
     ofstream myfile;
     myfile.open ("measurements.txt", std::ios::app);
-    myfile << "2nu " << se_2nu_measurements.at(0) << "  "
-           << "tl " << tl_measurements.at(0) << "  "
-           << "bi " << bi_measurements.at(0) << "  "
-           << "radon " << radon_measurements.at(0) << "\n";
-
+    for(unsigned int i = 0; i < se_2nu_measurements.size(); ++i) {
+      myfile << "2nu " << se_2nu_measurements.at(i) << "  "
+             << "tl " << tl_measurements.at(i) << "  "
+             << "bi " << bi_measurements.at(i) << "  "
+             << "radon " << radon_measurements.at(i) << "\n";
+    }
   }
 
   quantity_efficiency.clear();

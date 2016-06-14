@@ -60,7 +60,6 @@ void pseudo_generator(TString isotope, std::vector<TString> quantities, double a
 
     for(int i=0; i<n_events;++i) {
       double rdm_number = rdm->Uniform(1);
-      std::cout << "rdm " << rdm_number << std::endl;
       for(int j=1; j<=nbins;++j) {
         if(h_cdf->GetBinContent(j)>rdm_number) {
           h_pseudo->Fill(h_cdf->GetXaxis()->GetBinCenter(j));

@@ -12,6 +12,7 @@
         two_nu=${two_nu_files[$i]}
         output="merged/pseudo_$i.root"
         command='~/.macros/merge_trees.C("snemodata","'$output'","'$two_nu'","'$bi'","'$tl'")'
+        # command='~/.macros/merge_trees.C("snemodata","'$output'","'$two_nu'","'$bi'","'$tl'")'
         # command='~/.macros/merge_trees.C("snemodata","'$output'","'$bi'","'$tl'")'
         # echo $command
         root -l -q $command

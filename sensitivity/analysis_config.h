@@ -38,22 +38,45 @@ const bool print_fits = true;
 const std::map < std::string, double > isotope_activity = {
   {"2nu",9},
   {"bi214",10e-6},
-  {"radon",100e-6},
+  {"radon",150e-6},
   {"tl208",2e-6}
 };
 
-const std::vector <TString> quantities = {
-  "1e1g_electron_gamma_energy_sum",
-  "1e2g_electron_gammas_energy_sum",
-};
+// const std::map < std::string, double > isotope_activity = {
+//   {"2nu",9},
+//   {"bi214",0},
+//   {"radon",0},
+//   {"tl208",0}
+// };
 
+// //radon
+// const std::vector <TString> quantities = {
+//   //not understood "1e1a_alpha_angle",
+//   "1e1a_alpha_track_length",
+//   "1e1a_electron_alpha_angle",
+//   "1e1a_electron_alpha_vertices_probability",
+// };
+
+// // 2nu
 // const std::vector <TString> quantities = {
 //   "1e_electron_energy",
-//   "1e1g_electron_gamma_energy_sum",
-//   "1e2g_electron_gammas_energy_sum",
-//   "1e3g_electron_gammas_energy_sum",
-//   "2e1g_electrons_gammas_energy_sum"
+//   "2e_electron_maximal_energy",
+//   "2e_electrons_energy_sum",
+//   "2e_electrons_internal_probability",
+//   "2e_electrons_cos_angle",
+//   //maybe "2e_electrons_vertices_probability",
 // };
+
+// tl and bi
+const std::vector <TString> quantities = {
+  // "1e_electron_energy",
+  "1e1g_gamma_energy",
+  "1e1g_electron_gamma_energy_sum",
+  "1e2g_gamma_max_energy",
+  "1e2g_electron_gammas_energy_sum",
+  "1e3g_electron_gammas_energy_sum",
+  // "2e1g_electrons_gammas_energy_sum"
+};
 
 void get_histogram_options(TString quantity, int & nbins, double & xmin, double & xmax);
 

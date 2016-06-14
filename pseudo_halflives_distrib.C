@@ -21,8 +21,10 @@
 
 void pseudo_halflives_distrib()
 {
-  TH1F *h_hl_bdt = new TH1F("h_hl_bdt","h_hl_bdt",50,0.1,6.1);
-  TH1F *h_hl_roi = new TH1F("h_hl_roi","h_hl_roi",50,0.1,6.1);
+  TH1F *h_hl_bdt = new TH1F("h_hl_bdt","h_hl_bdt",120,2.5,6.5);
+  TH1F *h_hl_roi = new TH1F("h_hl_roi","h_hl_roi",120,2.5,6.5);
+  // TH1F *h_hl_bdt = new TH1F("h_hl_bdt","h_hl_bdt",120,0.5,4.5);
+  // TH1F *h_hl_roi = new TH1F("h_hl_roi","h_hl_roi",120,0.5,4.5);
 
   char channel[200];
   int  nevent;
@@ -31,7 +33,7 @@ void pseudo_halflives_distrib()
   TCanvas *c= new TCanvas();
   char file_name[200];
 
-  sprintf(file_name,"./halflives_pseudo.txt");
+  sprintf(file_name,"./halflives_pseudo_mm.txt");
 
   h_hl_bdt->SetName("BDT_halflives_distribution");
   h_hl_roi->SetName("ROI_halflives_distribution");
@@ -57,12 +59,25 @@ void pseudo_halflives_distrib()
 
   h_hl_roi->SetLineWidth(2);
 
+  h_hl_bdt->SetTitle(";Halflife limit [10^{24} years];# of pseudo-experiments");
+
+  h_hl_bdt->SetStats(0);
+
   h_hl_bdt->Draw("");
   h_hl_roi->Draw("same");
 
   h_hl_bdt->Write();
   h_hl_roi->Write();
 
+  Double_t xl1=.75, yl1=0.7, xl2=0.9, yl2=0.9;
+  TLegend *leg = new TLegend(xl1,yl1,xl2,yl2);
+  leg->AddEntry(h_hl_bdt,"BDT");
+  leg->AddEntry(h_hl_roi,"E_{TOT}");
+
+  leg->Draw("same");
+
+  std::cout << "mean bdt " << h_hl_bdt->GetMean(1) << std::endl;
+  std::cout << "mean roi " << h_hl_roi->GetMean(1) << std::endl;
   // // h_cd->GetXaxis()->SetTitle("Channels");
   // h_cd->GetXaxis()->SetTitleFont(62);
   // h_cd->GetXaxis()->SetTitleSize(0.05);

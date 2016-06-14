@@ -23,7 +23,8 @@
 void spectra_2e()
 {
 
-  TFile * f_0nu = TFile::Open("./data_0nu.root");
+  // TFile * f_0nu = TFile::Open("./data_0nu_mm.root");
+  TFile * f_0nu = TFile::Open("./data_0nu_rhc.root");
   TFile * f_2nu = TFile::Open("./data_2nu.root");
   TFile * f_tl208 = TFile::Open("./data_tl208.root");
   TFile * f_bi214 = TFile::Open("./data_bi214.root");

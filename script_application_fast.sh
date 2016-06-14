@@ -12,7 +12,7 @@
         rn='radon'
         n_step=5000
         n_0nu=100000
-        n_2nu=1000000
+        n_2nu=5000000
         n_tl=120000
         n_bi=165000
         n_radon=20000
@@ -22,6 +22,8 @@
         if [ "$isotope" = "$signal" ]; then
             n_app=$(($n_0nu / $n_step))-1
             echo 'Computing '$n_0nu' events'
+            sed -i -e 's@.*TString fname.*@TString fname = "./data_'$isotope_str'_rhc.root";@g' classification_application.C
+
         fi
         if [ "$isotope" = "$bb" ]; then
             n_app=$(($n_2nu / $n_step))-1

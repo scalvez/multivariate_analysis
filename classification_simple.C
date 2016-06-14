@@ -131,13 +131,18 @@ void classification_simple( TString myMethodList = "" )
 
    factory->AddVariable( "2e_electrons_energy_sum", "Electrons energy sum", "MeV", 'F' );
 
+   factory->AddVariable( "2e_electrons_internal_probability", "Electrons internal probability","",'F' );
+   factory->AddVariable( "2e_electrons_external_probability", "Electrons external probability","",'F' );
+   factory->AddVariable( "2e_electrons_vertices_probability", "Electrons vertices probability","",'F' );
+   factory->AddVariable( "2e_electrons_cos_angle", "Electrons cos(angle)", "", 'F' );
+   factory->AddVariable( "2e_electron_Emin_track_length", "Electron of minimal energy track length", "mm", 'F' );
+   factory->AddVariable( "2e_electron_Emax_track_length", "Electron of maximal energy track length", "mm", 'F' );
+
    // Read training and test data
    // (it is also possible to use ASCII format as input -> see TMVA Users Guide)
-   // TString fname_signal = "./root_export_0nu_small.root";
-   // TString fname_signal = "./root_export_0nu_25G.root";
-   // TString fname_background_2nu = "./root_export_2nu_25G.root";
-   TString fname_signal = "./root_export_0nu_25G.root";
-   TString fname_background_2nu = "./root_export_2nu_25G.root";
+   TString fname_background_2nu = "./training_samples/new_calib_2nu_1G.root";
+   // TString fname_signal = "./training_samples/new_calib_0nu.root";
+   TString fname_signal = "./training_samples/training_0nu_rhc.root";
 
    // TString fname_background_tl208 = "./root_export_tl208_25G.root";
    // TString fname_background_bi214 = "./root_export_bi214_25G.root";
@@ -156,8 +161,8 @@ void classification_simple( TString myMethodList = "" )
 
    // --- Register the training and test trees
 
-   TTree *signal = (TTree*)input_signal->Get("snemodata");
-   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;3");
+   TTree *signal = (TTree*)input_signal->Get("snemodata;1");
+   TTree *background_2nu = (TTree*)input_background_2nu->Get("snemodata;1");
 
    // TTree *background_tl208 = (TTree*)input_background_tl208->Get("snemodata;1");
    // TTree *background_bi214 = (TTree*)input_background_bi214->Get("snemodata;1");
@@ -165,8 +170,8 @@ void classification_simple( TString myMethodList = "" )
 
    // global event weights per tree (see below for setting event-wise weights)
    // Double_t signalWeight     = 0.0000000000001;
-   Double_t signalWeight     = 10000000000;
-   Double_t backgroundWeight = 1.0;
+   Double_t signalWeight     = 1.0;
+   Double_t backgroundWeight = 1000000000000.0;
 
    // You can add an arbitrary number of signal or background trees
    factory->AddSignalTree    ( signal,     signalWeight     );
@@ -257,7 +262,7 @@ void classification_simple( TString myMethodList = "" )
 
    // K-Nearest Neighbour classifier (KNN)
    if (Use["KNN"])
-      factory->BookMethod( TMVA::Types::kKNN, "KNN",
+     factory->BookMethod( TMVA::Types::kKNN, "KNN",
                            "H:nkNN=20:ScaleFrac=0.8:SigmaFact=1.0:Kernel=Gaus:UseKernel=F:UseWeight=T:!Trim" );
 
    // H-Matrix (chi2-squared) method
@@ -343,12 +348,22 @@ void classification_simple( TString myMethodList = "" )
    //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
    //                        "!H:!V:NTrees=800:MinNodeSize=0.0000000000000000000000000001%:SeparationType=GiniIndex:nCuts=100:NodePurityLimit=0.999");
 
-   // Standard no bagging, good conf
+   // Best conf talk lal
    if (Use["BDT"])  // Adaptive Boost
      factory->BookMethod( TMVA::Types::kBDT, "BDT",
-                          "!H:!V:NTrees=800:MinNodeSize=0.00000000000000000000000001%:SeparationType=SDivSqrtSPlusB:nCuts=100");
+                          "!H:!V:NTrees=1000:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=6:BoostType=AdaBoost");
 
-   // // Standard no bagging, good conf : to keep (removed max depth, adaboos beta ?, gini index) (with big weight for signal)
+   // // Check overtraining
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=1000:MinNodeSize=0.005%:SeparationType=GiniIndex:nCuts=400:MaxDepth=3:BoostType=AdaBoost");
+
+   // // Reference configuration
+   // if (Use["BDT"])  // Adaptive Boost
+   //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
+   //                        "!H:!V:NTrees=800:MinNodeSize=0.0000000000000000000000000001%:SeparationType=GiniIndex:nCuts=400:MaxDepth=4");
+
+   // // Standard no bagging, good conf : to keep (removed max depth, adaboost beta ?, gini index) (with big weight for signal)
    // if (Use["BDT"])  // Adaptive Boost
    //   factory->BookMethod( TMVA::Types::kBDT, "BDT",
    //                        "!H:!V:NTrees=800:MinNodeSize=0.0000000000000000000000000001%:SeparationType=GiniIndex:nCuts=100:VarTransform=Decorrelate");

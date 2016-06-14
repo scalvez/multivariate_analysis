@@ -30,7 +30,8 @@ namespace conf_sens {
 
   const double T_2nu = 9.0e19; //years
 
-  const double eff_0nu_2e = 0.25462;
+  // const double eff_0nu_2e = 0.25462; // MM
+  const double eff_0nu_2e = 0.161204; // rhc
   // const double eff_2nu_full_range_2e = 0.10104;
   const double eff_2nu_2e = 0.21712 / 25;
   const double eff_tl208_2e = 0.00121521;

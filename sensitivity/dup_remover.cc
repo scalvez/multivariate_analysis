@@ -25,8 +25,8 @@
 
 void dup_remover()
 {
-  TFile *f = TFile::Open("trees/tl208_tree_with_dupes.root");
-  TFile *newfile = new TFile("trees/tl208_tree.root","recreate");
+  TFile *f = TFile::Open("trees/merge.root");
+  TFile *newfile = new TFile("trees/2nu_2MeV_tree.root","recreate");
 
   TTree *oldtree = (TTree*)f->Get("snemodata");
 

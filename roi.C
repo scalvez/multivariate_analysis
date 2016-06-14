@@ -42,21 +42,21 @@ void roi()
   h_0nu_roi->SetLineColor(kRed);
   h_0nu_roi->SetLineWidth(2);
   h_0nu_roi->SetFillColor(kRed);
-  h_0nu_roi->SetTitle("0#nu;ROI energy; Probability");
+  h_0nu_roi->SetTitle("0#nu; ROI energy; Probability");
   h_0nu_roi->SetName("0nu");
   // h_0nu->Rebin();
 
   h_2nu_roi->SetLineColor(kBlue);
   h_2nu_roi->SetLineWidth(2);
   h_2nu_roi->SetFillColor(kBlue);
-  h_2nu_roi->SetTitle("2#nu;ROI energy; Probability");
+  h_2nu_roi->SetTitle("2#nu; ROI energy; Probability");
   h_2nu_roi->SetName("2nu");
   // h_2nu->Rebin();
 
   h_tl208_roi->SetLineColor(kGreen+1);
   h_tl208_roi->SetLineWidth(2);
   h_tl208_roi->SetFillColor(kGreen+1);
-  h_tl208_roi->SetTitle("^{208}Tl;ROI energy; Probability");
+  h_tl208_roi->SetTitle("^{208}Tl; ROI energy; Probability");
   h_tl208_roi->SetName("tl208");
   // h_tl208->Rebin();
 
